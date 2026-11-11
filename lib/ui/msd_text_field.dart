@@ -19,6 +19,13 @@ class MsdTextField extends StatelessWidget {
     this.enabled = true,
     this.forceLtr = false,
     this.inputFormatters,
+    this.suffixIcon,
+    this.errorText,
+    this.autofillHints,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
+    this.textCapitalization = TextCapitalization.none,
+    this.scrollPadding = const EdgeInsets.all(20),
   });
 
   final TextEditingController? controller;
@@ -35,6 +42,13 @@ class MsdTextField extends StatelessWidget {
   final bool enabled;
   final bool forceLtr;
   final List<TextInputFormatter>? inputFormatters;
+  final Widget? suffixIcon;
+  final String? errorText;
+  final Iterable<String>? autofillHints;
+  final bool autocorrect;
+  final bool enableSuggestions;
+  final TextCapitalization textCapitalization;
+  final EdgeInsets scrollPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +61,11 @@ class MsdTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
+      autofillHints: autofillHints,
+      autocorrect: autocorrect,
+      enableSuggestions: enableSuggestions,
+      textCapitalization: textCapitalization,
+      scrollPadding: scrollPadding,
       textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
       textAlign: rtl ? TextAlign.right : TextAlign.left,
       style: const TextStyle(
@@ -58,6 +77,8 @@ class MsdTextField extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        errorText: errorText,
         alignLabelWithHint: true,
       ),
       onChanged: onChanged,

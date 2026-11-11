@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../data/harasta_catalog.dart';
@@ -107,9 +106,9 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
     _open(Scaffold(
       backgroundColor: MsdColors.mist,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F2F36),
-        foregroundColor: const Color(0xFFF2F9F6),
-        title: Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, color: const Color(0xFFF2F9F6))),
+        backgroundColor: MsdTokens.deep,
+        foregroundColor: MsdTokens.onDeep,
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w800, color: MsdTokens.onDeep)),
       ),
       body: child,
     ));
@@ -123,13 +122,13 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
   Color _toneColor(String? tone) {
     switch ((tone ?? '').toLowerCase()) {
       case 'red':
-        return const Color(0xFFCF5A52);
+        return MsdTokens.danger;
       case 'amber':
-        return const Color(0xFFC0913A);
+        return MsdTokens.amberFill;
       case 'green':
-        return const Color(0xFF2E9E6C);
+        return MsdTokens.successFill;
       case 'blue':
-        return const Color(0xFF3A7BA6);
+        return MsdTokens.blue;
       case 'teal':
         return MsdColors.deepMid;
       default:
@@ -143,10 +142,10 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
   }
 
   Widget _sideNav() {
-    const deep = Color(0xFF0F2F36);
-    const mid = Color(0xFF16464F);
-    const accent = Color(0xFF0E8A82);
-    const soft = Color(0xFFF6FAFB);
+    const deep = MsdTokens.deep;
+    const mid = MsdTokens.deep;
+    const accent = MsdTokens.cyan;
+    const soft = MsdTokens.paper;
 
     Widget group({required String title, required List<Widget> children}) {
       return Padding(
@@ -158,9 +157,9 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
               padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
               child: Text(
                 title,
-                style: GoogleFonts.tajawal(
-                  color: const Color(0xFF6B858C),
-                  fontSize: 11,
+                style: TextStyle(
+                  color: MsdTokens.faint,
+                  fontSize: 12,
                   fontWeight: FontWeight.w800,
                   height: 1,
                 ),
@@ -170,15 +169,15 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFE2ECEF)),
+                border: Border.all(color: MsdTokens.mist),
                 boxShadow: const [
-                  BoxShadow(color: Color(0x080F2F36), blurRadius: 18, offset: Offset(0, 6)),
+                  BoxShadow(color: MsdTokens.lineSoft, blurRadius: 18, offset: Offset(0, 6)),
                 ],
               ),
               child: Column(
                 children: [
                   for (var i = 0; i < children.length; i++) ...[
-                    if (i > 0) const Divider(height: 1, thickness: 1, color: Color(0xFFF0F4F5), indent: 58, endIndent: 14),
+                    if (i > 0) const Divider(height: 1, thickness: 1, color: MsdTokens.paper, indent: 58, endIndent: 14),
                     children[i],
                   ],
                 ],
@@ -207,7 +206,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
-                colors: [deep, mid, Color(0xFF0B6F6A)],
+                colors: [deep, mid, MsdTokens.teal],
               ),
             ),
             child: Column(
@@ -240,7 +239,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                         children: [
                           Text(
                             HarastaCatalog.titleAr,
-                            style: GoogleFonts.tajawal(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w800,
                               fontSize: 15.5,
@@ -250,8 +249,8 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                           const SizedBox(height: 2),
                           Text(
                             'غرفة عمليات المشفى',
-                            style: GoogleFonts.tajawal(
-                              color: const Color(0xFFBFE6E2),
+                            style: TextStyle(
+                              color: MsdTokens.mintWash,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -276,7 +275,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFF5EE0C4),
+                          color: MsdTokens.sky,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -284,8 +283,8 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                       Expanded(
                         child: Text(
                           'واجهات المتابعة والمحطات',
-                          style: GoogleFonts.tajawal(
-                            color: const Color(0xFFE7F7F4),
+                          style: TextStyle(
+                            color: MsdTokens.mintWash,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -367,7 +366,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                             HarastaAssetsPage(api: widget.api),
                           )),
                     ),
-                    _navItem(icon: Icons.flag_outlined, label: 'الرؤية 2030', tone: const Color(0xFFB8893A), onTap: () => _go(() => _openSub('الرؤية 2030', const HarastaVisionPage()))),
+                    _navItem(icon: Icons.flag_outlined, label: 'الرؤية 2030', tone: MsdTokens.amberFill, onTap: () => _go(() => _openSub('الرؤية 2030', const HarastaVisionPage()))),
                     _navItem(
                       icon: Icons.tv_outlined,
                       label: 'شاشة النداء',
@@ -388,12 +387,12 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0x33CF5A52)),
+                  border: Border.all(color: MsdTokens.dangerSoft),
                 ),
                 child: _navItem(
                   icon: Icons.logout_rounded,
                   label: 'تسجيل الخروج',
-                  tone: const Color(0xFFC24B45),
+                  tone: MsdTokens.danger,
                   danger: true,
                   onTap: () => _go(() => widget.onLogout()),
                 ),
@@ -413,7 +412,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
     bool selected = false,
     bool danger = false,
   }) {
-    final fg = danger ? tone : (selected ? tone : const Color(0xFF1A4550));
+    final fg = danger ? tone : (selected ? tone : MsdTokens.deep);
     return Material(
       color: selected ? tone.withValues(alpha: 0.09) : Colors.transparent,
       borderRadius: BorderRadius.circular(16),
@@ -442,7 +441,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
               Expanded(
                 child: Text(
                   label,
-                  style: GoogleFonts.tajawal(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: selected || danger ? FontWeight.w800 : FontWeight.w700,
                     color: fg,
@@ -460,7 +459,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                 Icon(
                   Icons.chevron_left_rounded,
                   size: 18,
-                  color: (danger ? tone : const Color(0xFFA8B8BC)).withValues(alpha: 0.85),
+                  color: (danger ? tone : MsdTokens.faint).withValues(alpha: 0.85),
                 ),
             ],
           ),
@@ -473,7 +472,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF3F7F8),
+      backgroundColor: MsdTokens.paper,
       endDrawer: _sideNav(),
       body: RefreshIndicator(
         onRefresh: _reload,
@@ -532,7 +531,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF163A42), Color(0xFF1C4A54), Color(0xFF0F8F86)],
+          colors: [MsdTokens.deep, MsdTokens.deep, MsdTokens.cyan],
         ),
       ),
       child: Column(
@@ -548,15 +547,15 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
-                child: Text('H', style: GoogleFonts.tajawal(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 22)),
+                child: Text('H', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 22)),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(HarastaCatalog.titleAr, style: GoogleFonts.tajawal(color: const Color(0xFFB8E0F0), fontSize: 12, fontWeight: FontWeight.w600)),
-                    Text('Police Hospital · Harasta', style: GoogleFonts.tajawal(color: const Color(0x99D5EEF7), fontSize: 11), textDirection: TextDirection.ltr),
+                    Text(HarastaCatalog.titleAr, style: TextStyle(color: MsdTokens.onDeep, fontSize: 12, fontWeight: FontWeight.w600)),
+                    Text('Police Hospital · Harasta', style: TextStyle(color: MsdTokens.onDeep, fontSize: 12), textDirection: TextDirection.ltr),
                   ],
                 ),
               ),
@@ -573,9 +572,9 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          Text('غرفة عمليات المشفى', style: GoogleFonts.tajawal(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900)),
+          Text('غرفة عمليات المشفى', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
-          Text(_finding, style: GoogleFonts.tajawal(color: const Color(0xFFE3F4F2), fontSize: 14, height: 1.45)),
+          Text(_finding, style: TextStyle(color: MsdTokens.onDeep, fontSize: 14, height: 1.45)),
         ],
       ),
     );
@@ -588,7 +587,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x221C4A54)),
+        border: Border.all(color: MsdTokens.deepWash),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,20 +598,20 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('متابعة فورية', style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
-                    Text('شريط الانتظار', style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 17)),
+                    Text('متابعة فورية', style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
+                    Text('شريط الانتظار', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
                   ],
                 ),
               ),
               Text(
                 pressure.isEmpty ? 'لا ضغط ظاهر' : '${pressure.length} يحتاج مراجعة',
-                style: GoogleFonts.tajawal(color: MsdColors.teal, fontWeight: FontWeight.w700, fontSize: 12),
+                style: TextStyle(color: MsdColors.teal, fontWeight: FontWeight.w700, fontSize: 12),
               ),
             ],
           ),
           const SizedBox(height: 8),
           if (pressure.isEmpty)
-            Text('كل الأقسام ضمن الحمل الطبيعي حالياً.', style: GoogleFonts.tajawal(color: MsdColors.sub))
+            Text('كل الأقسام ضمن الحمل الطبيعي حالياً.', style: TextStyle(color: MsdColors.sub))
           else
             Wrap(
               spacing: 8,
@@ -622,16 +621,16 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0x141C4A54),
+                      color: MsdTokens.lineSoft,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${d['name'] ?? ''}', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                        Text(d['name']?.toString() ?? '', style: const TextStyle(fontWeight: FontWeight.w800)),
                         Text(
-                          '${_asInt(d['queued']) > 0 ? '${d['queued']} بانتظار' : 'مراجعة السعة'}',
-                          style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12),
+                          _asInt(d['queued']) > 0 ? '${d['queued']} بانتظار' : 'مراجعة السعة',
+                          style: TextStyle(color: MsdColors.sub, fontSize: 12),
                         ),
                       ],
                     ),
@@ -655,13 +654,13 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0x221C4A54)),
+              border: Border.all(color: MsdTokens.deepWash),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(k.$1, style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w600)),
-                Text(k.$2, style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w900, color: const Color(0xFF1C4A54))),
+                Text(k.$1, style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w600)),
+                Text(k.$2, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: MsdTokens.deep)),
               ],
             ),
           ),
@@ -677,8 +676,8 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
-              Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 17)),
+              Text(label, style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
+              Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
             ],
           ),
         ),
@@ -700,7 +699,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x141C4A54)),
+        border: Border.all(color: MsdTokens.lineSoft),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -721,12 +720,12 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Text('${d['name'] ?? ''}', style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 16))),
+                      Expanded(child: Text('${d['name'] ?? ''}', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16))),
                       if (queued > 0)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(color: tone.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-                          child: Text('بالدور $queued', style: GoogleFonts.tajawal(color: tone, fontWeight: FontWeight.w800, fontSize: 12)),
+                          child: Text('بالدور $queued', style: TextStyle(color: tone, fontWeight: FontWeight.w800, fontSize: 12)),
                         ),
                     ],
                   ),
@@ -745,14 +744,14 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
                       child: LinearProgressIndicator(
                         value: (pct / 100).clamp(0.0, 1.0),
                         minHeight: 8,
-                        backgroundColor: const Color(0x141C4A54),
-                        color: pct >= 90 ? const Color(0xFFCF5A52) : pct >= 75 ? const Color(0xFFC0913A) : tone,
+                        backgroundColor: MsdTokens.lineSoft,
+                        color: pct >= 90 ? MsdTokens.danger : pct >= 75 ? MsdTokens.amberFill : tone,
                       ),
                     ),
                   ] else
                     Text(
                       present > 0 ? '$present بانتظار الدور الآن' : 'لا انتظار حالياً',
-                      style: GoogleFonts.tajawal(color: present > 0 ? const Color(0xFFC0913A) : MsdColors.sub, fontWeight: FontWeight.w700),
+                      style: TextStyle(color: present > 0 ? MsdTokens.amberFill : MsdColors.sub, fontWeight: FontWeight.w700),
                     ),
                   const SizedBox(height: 10),
                   Row(
@@ -773,16 +772,16 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
 
   Widget _metric(String value, String label, {bool warn = false, bool ok = false}) {
     final color = warn
-        ? const Color(0xFFC0913A)
+        ? MsdTokens.amberFill
         : ok
-            ? const Color(0xFF2E9E6C)
-            : const Color(0xFF1C4A54);
+            ? MsdTokens.successFill
+            : MsdTokens.deep;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(value, style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 16, color: color)),
-          Text(label, style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.sub)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: color)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub)),
         ],
       ),
     );
@@ -792,16 +791,16 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C4A54),
+        color: MsdTokens.deep,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('العيادات', style: GoogleFonts.tajawal(color: const Color(0xFF9FD8CF), fontSize: 12, fontWeight: FontWeight.w700)),
-          Text('إحصائيات العيادات — اليوم', style: GoogleFonts.tajawal(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 17)),
+          Text('العيادات', style: TextStyle(color: MsdTokens.mintWash, fontSize: 12, fontWeight: FontWeight.w700)),
+          Text('إحصائيات العيادات — اليوم', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 17)),
           const SizedBox(height: 4),
-          Text('الانتظار، التوجيهات، ومتوسط الانتظار لكل عيادة.', style: GoogleFonts.tajawal(color: const Color(0xFFD5EEF7), fontSize: 13)),
+          Text('الانتظار، التوجيهات، ومتوسط الانتظار لكل عيادة.', style: TextStyle(color: MsdTokens.onDeep, fontSize: 13)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -809,7 +808,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
               FilledButton(
                 onPressed: () => openHarastaStation(
                   context, widget.api, 'clinic_live', onLogout: widget.onLogout),
-                style: FilledButton.styleFrom(backgroundColor: const Color(0xFF0F8F86)),
+                style: FilledButton.styleFrom(backgroundColor: MsdTokens.cyan),
                 child: const Text('عرض كاملة'),
               ),
               TextButton(
@@ -833,10 +832,10 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
 
   Widget _capacity() {
     const beds = [
-      ('أقسام الإقامة', 124, Color(0xFF0F8F86)),
-      ('العناية والحواضن', 45, Color(0xFF3A7BA6)),
-      ('الجناح الاحترازي', 22, Color(0xFFC0913A)),
-      ('الإسعاف', 15, Color(0xFFCF5A52)),
+      ('أقسام الإقامة', 124, MsdTokens.cyan),
+      ('العناية والحواضن', 45, MsdTokens.blue),
+      ('الجناح الاحترازي', 22, MsdTokens.amberFill),
+      ('الإسعاف', 15, MsdTokens.danger),
     ];
     final max = beds.map((e) => e.$2).reduce((a, b) => a > b ? a : b).toDouble();
     return Container(
@@ -844,38 +843,38 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x221C4A54)),
+        border: Border.all(color: MsdTokens.deepWash),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('السعة', style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
-          Text('توزيع الأسرّة', style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 17)),
+          Text('السعة', style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
+          Text('توزيع الأسرّة', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
           const SizedBox(height: 10),
           for (final b in beds) ...[
             Row(
               children: [
-                SizedBox(width: 110, child: Text(b.$1, style: GoogleFonts.tajawal(fontSize: 12, fontWeight: FontWeight.w700))),
+                SizedBox(width: 110, child: Text(b.$1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700))),
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(999),
                     child: LinearProgressIndicator(
                       value: b.$2 / max,
                       minHeight: 10,
-                      backgroundColor: const Color(0x141C4A54),
+                      backgroundColor: MsdTokens.lineSoft,
                       color: b.$3,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text('${b.$2}', style: GoogleFonts.tajawal(fontWeight: FontWeight.w900)),
+                Text('${b.$2}', style: TextStyle(fontWeight: FontWeight.w900)),
               ],
             ),
             const SizedBox(height: 8),
           ],
           Text(
             'دراسة لرفع الطاقة الاستيعابية الكلية من 250 إلى 400 سرير',
-            style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12),
+            style: TextStyle(color: MsdColors.sub, fontSize: 12),
           ),
         ],
       ),
@@ -884,7 +883,7 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
 
   Widget _opsGrid() {
     if (_ops.isEmpty) {
-      return Text('لا مؤشرات حالياً', style: GoogleFonts.tajawal(color: MsdColors.sub));
+      return Text('لا مؤشرات حالياً', style: TextStyle(color: MsdColors.sub));
     }
     return Wrap(
       spacing: 8,
@@ -897,14 +896,14 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0x221C4A54)),
+              border: Border.all(color: MsdTokens.deepWash),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${o['key'] ?? ''}', style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
-                Text('${o['value'] ?? 0}', style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w900, color: const Color(0xFF1C4A54))),
-                Text('${o['detail'] ?? ''}', style: GoogleFonts.tajawal(color: MsdColors.faint, fontSize: 11)),
+                Text('${o['key'] ?? ''}', style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
+                Text('${o['value'] ?? 0}', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: MsdTokens.deep)),
+                Text('${o['detail'] ?? ''}', style: TextStyle(color: MsdColors.faint, fontSize: 12)),
               ],
             ),
           ),
@@ -932,14 +931,14 @@ class _HarastaHubScreenState extends State<HarastaHubScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0x221C4A54)),
+              border: Border.all(color: MsdTokens.deepWash),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(i.$1, style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
-                Text(i.$2, style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w900, color: const Color(0xFF0F8F86))),
-                Text(i.$3, style: GoogleFonts.tajawal(color: MsdColors.faint, fontSize: 11)),
+                Text(i.$1, style: TextStyle(color: MsdColors.sub, fontSize: 12, fontWeight: FontWeight.w700)),
+                Text(i.$2, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: MsdTokens.cyan)),
+                Text(i.$3, style: TextStyle(color: MsdColors.faint, fontSize: 12)),
               ],
             ),
           ),

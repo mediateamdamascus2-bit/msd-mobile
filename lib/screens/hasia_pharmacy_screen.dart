@@ -148,7 +148,7 @@ class _HasiaPharmacyScreenState extends State<HasiaPharmacyScreen>
           ],
         ),
         actions: [
-          IconButton(onPressed: _reload, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _reload, icon: const Icon(Icons.refresh)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

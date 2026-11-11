@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../api_client.dart';
 import '../../data/harasta_catalog.dart';
@@ -14,14 +13,14 @@ abstract final class _Sv {
   static const sub = MsdColors.sub;
   static const faint = MsdColors.faint;
   static const line = MsdColors.line;
-  static const drawerDeep = Color(0xFF0F2F36);
-  static const drawerMid = Color(0xFF16464F);
-  static const drawerAccent = Color(0xFF0E8A82);
+  static const drawerDeep = MsdTokens.deep;
+  static const drawerMid = MsdTokens.deep;
+  static const drawerAccent = MsdTokens.cyan;
   static const data = drawerMid;
   static const cyan = MsdColors.cyan;
   static const ok = MsdColors.green;
   static const mid = MsdColors.amber;
-  static const high = Color(0xFFCF5A52);
+  static const high = MsdTokens.danger;
   static const crit = MsdColors.danger;
   static const mist = MsdColors.mist;
   static const page = MsdColors.mist;
@@ -78,9 +77,9 @@ class _SvHero extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [_Sv.drawerDeep, _Sv.drawerMid, Color(0xFF0B6F6A)],
+          colors: [_Sv.drawerDeep, _Sv.drawerMid, MsdTokens.teal],
         ),
-        boxShadow: const [BoxShadow(color: Color(0x990F2F36), blurRadius: 28, offset: Offset(0, 14))],
+        boxShadow: const [BoxShadow(color: MsdTokens.deepWash, blurRadius: 28, offset: Offset(0, 14))],
       ),
       child: Stack(
         children: [
@@ -99,11 +98,11 @@ class _SvHero extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('متابعة المسؤول · بدون إدخال', style: GoogleFonts.tajawal(color: const Color(0xFF9FD8CF), fontSize: 12, fontWeight: FontWeight.w600)),
+              Text('متابعة المسؤول · بدون إدخال', style: TextStyle(color: MsdTokens.mintWash, fontSize: 12, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Text(lead, style: GoogleFonts.tajawal(color: const Color(0xFFF2F9F6), fontSize: 16, height: 1.45, fontWeight: FontWeight.w800)),
+              Text(lead, style: TextStyle(color: MsdTokens.onDeep, fontSize: 16, height: 1.45, fontWeight: FontWeight.w800)),
               const SizedBox(height: 6),
-              Text(note, style: GoogleFonts.tajawal(color: const Color(0xE09FD8CF), fontSize: 12.5, height: 1.45, fontWeight: FontWeight.w600)),
+              Text(note, style: TextStyle(color: MsdTokens.mintWash, fontSize: 12.5, height: 1.45, fontWeight: FontWeight.w600)),
               const SizedBox(height: 14),
               Wrap(
                 spacing: 8,
@@ -156,10 +155,10 @@ class _SvBtn extends StatelessWidget {
               ],
               Text(
                 label,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
-                  color: ghost ? const Color(0xFFEEF5F3) : _Sv.ink,
+                  color: ghost ? MsdTokens.page : _Sv.ink,
                 ),
               ),
             ],
@@ -191,16 +190,16 @@ class _SvKpi extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.94),
         borderRadius: BorderRadius.circular(17),
         border: Border.all(color: _Sv.line),
-        boxShadow: const [BoxShadow(color: Color(0x331A6B8A), blurRadius: 20, offset: Offset(0, 10))],
+        boxShadow: const [BoxShadow(color: MsdTokens.tealWash, blurRadius: 20, offset: Offset(0, 10))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w600, color: _Sv.faint)),
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.faint)),
           const SizedBox(height: 4),
-          Text(value, style: GoogleFonts.tajawal(fontSize: 26, fontWeight: FontWeight.w800, color: valueColor, height: 1.1)),
+          Text(value, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: valueColor, height: 1.1)),
           const SizedBox(height: 2),
-          Text(hint, style: GoogleFonts.tajawal(fontSize: 11, fontWeight: FontWeight.w600, color: _Sv.sub)),
+          Text(hint, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.sub)),
         ],
       ),
     );
@@ -228,11 +227,11 @@ class _SvChips extends StatelessWidget {
               decoration: BoxDecoration(
                 color: value == o.$1 ? _Sv.drawerMid : Colors.white,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: value == o.$1 ? _Sv.drawerMid : const Color(0x33A8D4E6)),
+                border: Border.all(color: value == o.$1 ? _Sv.drawerMid : MsdTokens.skyLine),
               ),
               child: Text(
                 o.$2,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
                   color: value == o.$1 ? Colors.white : _Sv.sub,
@@ -260,7 +259,7 @@ class _SvPanel extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: _Sv.line),
-        boxShadow: const [BoxShadow(color: Color(0x141A6B8A), blurRadius: 18, offset: Offset(0, 8))],
+        boxShadow: const [BoxShadow(color: MsdTokens.tealWash, blurRadius: 18, offset: Offset(0, 8))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -272,13 +271,13 @@ class _SvPanel extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w600, color: _Sv.faint)),
+                    Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.faint)),
                     const SizedBox(height: 2),
-                    Text(title, style: GoogleFonts.tajawal(fontSize: 16.5, fontWeight: FontWeight.w800, color: _Sv.ink)),
+                    Text(title, style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, color: _Sv.ink)),
                   ],
                 ),
               ),
-              Text('يتحدّث كل 30 ثانية', style: GoogleFonts.tajawal(fontSize: 11.5, color: _Sv.faint, fontWeight: FontWeight.w600)),
+              Text('يتحدّث كل 30 ثانية', style: TextStyle(fontSize: 12, color: _Sv.faint, fontWeight: FontWeight.w600)),
             ],
           ),
           const SizedBox(height: 12),
@@ -301,7 +300,7 @@ class _SvBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
-      child: Text(_levelLabel(level), style: GoogleFonts.tajawal(fontSize: 10.5, fontWeight: FontWeight.w800, color: fg)),
+      child: Text(_levelLabel(level), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: fg)),
     );
   }
 }
@@ -336,14 +335,14 @@ class _SvPressureCard extends StatelessWidget {
           child: Ink(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(17),
-              border: Border.all(color: selected ? const Color(0x731A6B8A) : _Sv.line),
+              border: Border.all(color: selected ? MsdTokens.tealWash : _Sv.line),
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: selected ? const [Color(0xFFF0F9FC), Colors.white] : const [Colors.white, Color(0xFFF7FBFD)],
+                colors: selected ? const [MsdTokens.page, Colors.white] : const [Colors.white, MsdTokens.page],
               ),
               boxShadow: selected
-                  ? const [BoxShadow(color: Color(0x401A6B8A), blurRadius: 22, offset: Offset(0, 10))]
+                  ? const [BoxShadow(color: MsdTokens.tealWash, blurRadius: 22, offset: Offset(0, 10))]
                   : const [],
             ),
             child: IntrinsicHeight(
@@ -358,7 +357,7 @@ class _SvPressureCard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Expanded(child: Text(title, style: GoogleFonts.tajawal(fontSize: 14.5, fontWeight: FontWeight.w800, color: _Sv.ink, height: 1.3))),
+                              Expanded(child: Text(title, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800, color: _Sv.ink, height: 1.3))),
                               _SvBadge(level: level),
                             ],
                           ),
@@ -375,8 +374,8 @@ class _SvPressureCard extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(m.value, style: GoogleFonts.tajawal(fontSize: 14, fontWeight: FontWeight.w800, color: m.hot ? _Sv.high : _Sv.ink)),
-                                    Text(m.label, style: GoogleFonts.tajawal(fontSize: 10.5, fontWeight: FontWeight.w600, color: _Sv.faint)),
+                                    Text(m.value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: m.hot ? _Sv.high : _Sv.ink)),
+                                    Text(m.label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.faint)),
                                   ],
                                 ),
                             ],
@@ -388,7 +387,7 @@ class _SvPressureCard extends StatelessWidget {
                               child: LinearProgressIndicator(
                                 value: bar!.clamp(0.0, 1.0),
                                 minHeight: 5,
-                                backgroundColor: const Color(0x1A1A6B8A),
+                                backgroundColor: MsdTokens.tealWash,
                                 color: level == _Level.high || level == _Level.critical ? _Sv.high : _Sv.data,
                               ),
                             ),
@@ -435,23 +434,23 @@ class _SvPatient extends StatelessWidget {
               color: _Sv.cyan.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(9),
             ),
-            child: Text('$rank', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 12, color: _Sv.data)),
+            child: Text('$rank', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: _Sv.data)),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14, color: _Sv.ink)),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: _Sv.ink)),
                 const SizedBox(height: 2),
-                Text(subtitle, style: GoogleFonts.tajawal(fontSize: 12, color: _Sv.sub, fontWeight: FontWeight.w600)),
+                Text(subtitle, style: TextStyle(fontSize: 12, color: _Sv.sub, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,
                   children: [
                     for (final m in meta.where((e) => e.trim().isNotEmpty))
-                      Text(m, style: GoogleFonts.tajawal(fontSize: 11, color: _Sv.faint, fontWeight: FontWeight.w700)),
+                      Text(m, style: TextStyle(fontSize: 12, color: _Sv.faint, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ],
@@ -481,9 +480,9 @@ class _SvEmpty extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14.5, color: _Sv.ink)),
+          Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: _Sv.ink)),
           const SizedBox(height: 4),
-          Text(body, style: GoogleFonts.tajawal(fontSize: 12.5, height: 1.45, color: _Sv.sub, fontWeight: FontWeight.w600)),
+          Text(body, style: TextStyle(fontSize: 12.5, height: 1.45, color: _Sv.sub, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -517,12 +516,12 @@ class _SvDetail extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w600, color: _Sv.faint)),
-                    Text(title, style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w800, color: _Sv.ink)),
+                    Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.faint)),
+                    Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _Sv.ink)),
                   ],
                 ),
               ),
-              Text(big, style: GoogleFonts.tajawal(fontSize: 24, fontWeight: FontWeight.w800, color: _Sv.data)),
+              Text(big, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: _Sv.data)),
             ],
           ),
           const SizedBox(height: 12),
@@ -538,15 +537,15 @@ class _SvDetail extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
-                    color: const Color(0xB3EAF6FB),
+                    color: MsdTokens.pageWash,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: _Sv.line),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(e.$1, style: GoogleFonts.tajawal(fontSize: 10.5, fontWeight: FontWeight.w600, color: _Sv.faint)),
-                      Text(e.$2, style: GoogleFonts.tajawal(fontSize: 14, fontWeight: FontWeight.w800, color: _Sv.ink)),
+                      Text(e.$1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _Sv.faint)),
+                      Text(e.$2, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: _Sv.ink)),
                     ],
                   ),
                 ),
@@ -560,7 +559,7 @@ class _SvDetail extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: _Sv.line),
             ),
-            child: Text(hint, style: GoogleFonts.tajawal(fontSize: 12, height: 1.4, fontWeight: FontWeight.w600, color: _Sv.sub)),
+            child: Text(hint, style: TextStyle(fontSize: 12, height: 1.4, fontWeight: FontWeight.w600, color: _Sv.sub)),
           ),
         ],
       ),
@@ -648,10 +647,12 @@ class _HarastaReceptionBoardPageState extends State<HarastaReceptionBoardPage> {
     } catch (e) {
       if (mounted && !silent) await MsdNotify.error(context, e.toString());
     } finally {
-      if (mounted) setState(() {
-        _loading = false;
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _busy = false;
+        });
+      }
     }
   }
 
@@ -833,10 +834,12 @@ class _HarastaClinicsBoardPageState extends State<HarastaClinicsBoardPage> {
     } catch (e) {
       if (mounted && !silent) await MsdNotify.error(context, e.toString());
     } finally {
-      if (mounted) setState(() {
-        _loading = false;
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _busy = false;
+        });
+      }
     }
   }
 
@@ -995,10 +998,12 @@ class _HarastaDeptsBoardPageState extends State<HarastaDeptsBoardPage> {
     } catch (e) {
       if (mounted && !silent) await MsdNotify.error(context, e.toString());
     } finally {
-      if (mounted) setState(() {
-        _loading = false;
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _busy = false;
+        });
+      }
     }
   }
 
@@ -1157,10 +1162,12 @@ class _HarastaBookingBoardPageState extends State<HarastaBookingBoardPage> {
     } catch (e) {
       if (mounted && !silent) await MsdNotify.error(context, e.toString());
     } finally {
-      if (mounted) setState(() {
-        _loading = false;
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _busy = false;
+        });
+      }
     }
   }
 

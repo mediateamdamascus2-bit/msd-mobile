@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/cmd_icon.dart';
+import '../../theme/tokens.dart';
 
-/// Teal COMMAND SITREP palette (mirrors NativeHomeScreen / site Icon palette).
+/// Teal COMMAND SITREP palette. Values come from [MsdTokens].
 class OpsColors {
-  static const ink = Color(0xFF143139);
-  static const sub = Color(0xFF4C6B71);
-  static const faint = Color(0xFF86A1A1);
-  static const line = Color(0x1F143139);
-  static const lineSoft = Color(0x14143139);
-  static const paper = Color(0xFFF4F8F9);
-  static const page = Color(0xFFEAF6FB);
-  static const cyan = Color(0xFF0F8F86);
-  static const teal = Color(0xFF136B6B);
-  static const blue = Color(0xFF3A7BA6);
-  static const green = Color(0xFF2E9E6C);
-  static const amber = Color(0xFFC0913A);
-  static const red = Color(0xFFCF5A52);
-  static const surface = Color(0x0C134048);
+  static const ink = MsdTokens.ink;
+  static const sub = MsdTokens.sub;
+  static const faint = MsdTokens.faint;
+  static const line = MsdTokens.line;
+  static const lineSoft = MsdTokens.lineSoft;
+  static const paper = MsdTokens.paper;
+  static const page = MsdTokens.page;
+  static const cyan = MsdTokens.cyan;
+  static const teal = MsdTokens.teal;
+  static const blue = MsdTokens.blue;
+  static const green = MsdTokens.successFill;
+  static const amber = MsdTokens.amberText;
+  static const red = MsdTokens.danger;
+  static const surface = MsdTokens.surface;
 }
 
 TextStyle opsText(
@@ -27,7 +27,13 @@ TextStyle opsText(
   Color color = OpsColors.ink,
   double? height,
 }) =>
-    GoogleFonts.tajawal(fontSize: size, fontWeight: w, color: color, height: height);
+    TextStyle(
+      fontFamily: 'Tajawal',
+      fontSize: size < 12 ? 12 : size,
+      fontWeight: w,
+      color: color,
+      height: height,
+    );
 
 // ───────────────────────── data models (read-only mock) ─────────────────────────
 
@@ -171,7 +177,7 @@ class OpsScaffold extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(title, style: opsText(16, w: FontWeight.w800)),
-            Text(eyebrow, style: opsText(10.5, w: FontWeight.w700, color: OpsColors.faint)),
+            Text(eyebrow, style: opsText(12, w: FontWeight.w700, color: OpsColors.faint)),
           ],
         ),
       ),
@@ -221,7 +227,7 @@ class OpsCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: OpsColors.line),
-        boxShadow: const [BoxShadow(color: Color(0x24102F36), blurRadius: 20, offset: Offset(0, 10))],
+        boxShadow: const [BoxShadow(color: MsdTokens.deepWash, blurRadius: 20, offset: Offset(0, 10))],
       ),
       foregroundDecoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
@@ -254,7 +260,7 @@ class OpsSectionTitle extends StatelessWidget {
               color: OpsColors.cyan.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text(no, style: opsText(10.5, w: FontWeight.w800, color: OpsColors.cyan)),
+            child: Text(no, style: opsText(12, w: FontWeight.w800, color: OpsColors.cyan)),
           ),
           const SizedBox(width: 8),
           Expanded(child: Text(title, style: opsText(14, w: FontWeight.w800))),
@@ -278,7 +284,7 @@ class OpsPillTag extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
-      child: Text(label, style: opsText(11, w: FontWeight.w800, color: color)),
+      child: Text(label, style: opsText(12, w: FontWeight.w800, color: color)),
     );
   }
 }
@@ -295,7 +301,7 @@ class OpsBar extends StatelessWidget {
       borderRadius: BorderRadius.circular(999),
       child: Container(
         height: height,
-        color: const Color(0x14134048),
+        color: MsdTokens.lineSoft,
         alignment: AlignmentDirectional.centerStart,
         child: FractionallySizedBox(
           widthFactor: fraction.clamp(0.0, 1.0),
@@ -321,10 +327,10 @@ class OpsKpiRow extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFFFFFFF), Color(0xFFF7FBFB)],
+          colors: [MsdTokens.white, MsdTokens.paper],
         ),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF0D3038).withValues(alpha: 0.12), blurRadius: 22, offset: const Offset(0, 10)),
+          BoxShadow(color: MsdTokens.deep.withValues(alpha: 0.12), blurRadius: 22, offset: const Offset(0, 10)),
         ],
       ),
       clipBehavior: Clip.antiAlias,
@@ -407,11 +413,11 @@ class OpsKpiRow extends StatelessWidget {
                         Container(
                           width: 6,
                           height: 6,
-                          decoration: const BoxDecoration(color: Color(0xFF2E9E6C), shape: BoxShape.circle),
+                          decoration: const BoxDecoration(color: MsdTokens.successFill, shape: BoxShape.circle),
                         ),
                         const SizedBox(width: 5),
                       ],
-                      Text(k.hint!, style: opsText(10.5, w: FontWeight.w800, color: deltaColor)),
+                      Text(k.hint!, style: opsText(12, w: FontWeight.w800, color: deltaColor)),
                     ],
                   ),
                 )
@@ -450,7 +456,7 @@ class OpsKpiRow extends StatelessWidget {
             k.label,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: opsText(11.5, color: OpsColors.sub),
+            style: opsText(12, color: OpsColors.sub),
           ),
           const SizedBox(height: 10),
           if (k.value != kNoData) SizedBox(
@@ -498,7 +504,7 @@ class OpsFilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 42,
+      height: 48,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: OpsColors.paper,
@@ -572,7 +578,7 @@ class OpsSearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 44,
+      height: 48,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -628,7 +634,7 @@ class OpsInfoGrid extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(r.$1, style: opsText(10.5, color: OpsColors.faint)),
+                      Text(r.$1, style: opsText(12, color: OpsColors.faint)),
                       const SizedBox(height: 2),
                       Text(r.$2, maxLines: 2, overflow: TextOverflow.ellipsis, style: opsText(13, w: FontWeight.w800)),
                     ],
@@ -691,7 +697,7 @@ class OpsTimeline extends StatelessWidget {
                           steps[i].label,
                           style: opsText(13, w: FontWeight.w700, color: steps[i].done ? OpsColors.ink : OpsColors.faint),
                         ),
-                        Text(steps[i].t, style: opsText(11, color: OpsColors.faint)),
+                        Text(steps[i].t, style: opsText(12, color: OpsColors.faint)),
                       ],
                     ),
                   ),
@@ -839,7 +845,7 @@ class _OpsMonitorScreenState extends State<OpsMonitorScreen> {
               border: Border.all(color: OpsColors.line),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0D3038).withValues(alpha: 0.06),
+                  color: MsdTokens.deep.withValues(alpha: 0.06),
                   blurRadius: 18,
                   offset: const Offset(0, 8),
                 ),
@@ -869,7 +875,7 @@ class _OpsMonitorScreenState extends State<OpsMonitorScreen> {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             'عرض ${rows.length} من ${widget.items.length} ${widget.unit}',
-            style: opsText(11.5, w: FontWeight.w700, color: OpsColors.faint),
+            style: opsText(12, w: FontWeight.w700, color: OpsColors.faint),
           ),
         ),
         if (widget.items.isEmpty)
@@ -937,7 +943,7 @@ class _OpsItemCard extends StatelessWidget {
                       item.subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: opsText(11.5, color: OpsColors.faint),
+                      style: opsText(12, color: OpsColors.faint),
                     ),
                   ],
                 ),
@@ -949,7 +955,7 @@ class _OpsItemCard extends StatelessWidget {
                   children: [
                     Text(item.metricValue!, style: opsText(16, w: FontWeight.w900, height: 1)),
                     if (item.metricLabel != null)
-                      Text(item.metricLabel!, style: opsText(10, color: OpsColors.faint)),
+                      Text(item.metricLabel!, style: opsText(12, color: OpsColors.faint)),
                   ],
                 ),
               ],
@@ -987,7 +993,7 @@ class _Badge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(label, style: opsText(10.5, w: FontWeight.w900, color: color)),
+      child: Text(label, style: opsText(12, w: FontWeight.w900, color: color)),
     );
   }
 }
@@ -1027,7 +1033,7 @@ Future<void> showOpsDetail(BuildContext context, OpsItem item, {String kindLabel
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('$kindLabel · ${item.id}', style: opsText(10.5, w: FontWeight.w800, color: OpsColors.cyan)),
+                      Text('$kindLabel · ${item.id}', style: opsText(12, w: FontWeight.w800, color: OpsColors.cyan)),
                       const SizedBox(height: 2),
                       Row(
                         children: [
@@ -1070,7 +1076,7 @@ Future<void> showOpsDetail(BuildContext context, OpsItem item, {String kindLabel
                         children: [
                           Text(item.bannerTitle!, style: opsText(13.5, w: FontWeight.w800)),
                           if (item.bannerSub != null)
-                            Text(item.bannerSub!, style: opsText(11.5, color: OpsColors.faint)),
+                            Text(item.bannerSub!, style: opsText(12, color: OpsColors.faint)),
                         ],
                       ),
                     ),
@@ -1098,7 +1104,7 @@ Future<void> showOpsDetail(BuildContext context, OpsItem item, {String kindLabel
             ],
             if (item.tags.isNotEmpty) ...[
               const SizedBox(height: 14),
-              Text(item.tagsTitle, style: opsText(11, w: FontWeight.w800, color: OpsColors.faint)),
+              Text(item.tagsTitle, style: opsText(12, w: FontWeight.w800, color: OpsColors.faint)),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 6,
@@ -1123,7 +1129,7 @@ Future<void> showOpsDetail(BuildContext context, OpsItem item, {String kindLabel
             ],
             if (item.steps.isNotEmpty) ...[
               const SizedBox(height: 14),
-              Text(item.stepsTitle, style: opsText(11, w: FontWeight.w800, color: OpsColors.faint)),
+              Text(item.stepsTitle, style: opsText(12, w: FontWeight.w800, color: OpsColors.faint)),
               const SizedBox(height: 8),
               OpsTimeline(steps: item.steps),
             ],
@@ -1175,7 +1181,7 @@ class _GaugeBox extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text(g.label, style: opsText(11, color: OpsColors.faint))),
+              Expanded(child: Text(g.label, style: opsText(12, color: OpsColors.faint))),
               Text('${g.pct}٪', style: opsText(12, w: FontWeight.w900, color: g.color)),
             ],
           ),
@@ -1203,7 +1209,7 @@ class _TransferBox extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(label, style: opsText(10.5, color: OpsColors.faint)),
+                Text(label, style: opsText(12, color: OpsColors.faint)),
                 const SizedBox(height: 2),
                 Text(
                   value,
@@ -1228,7 +1234,7 @@ class _TransferBox extends StatelessWidget {
             children: [
               const CmdIcon('sync', size: 15, color: OpsColors.blue, stroke: 2),
               const SizedBox(width: 6),
-              Text('تحويل — ${t.kind}', style: opsText(11.5, w: FontWeight.w800, color: OpsColors.blue)),
+              Text('تحويل — ${t.kind}', style: opsText(12, w: FontWeight.w800, color: OpsColors.blue)),
             ],
           ),
           const SizedBox(height: 8),

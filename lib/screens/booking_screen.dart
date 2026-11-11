@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../api_client.dart';
 import '../theme/app_theme.dart';
 import '../theme/station_chrome.dart';
@@ -420,7 +419,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   decoration: const InputDecoration(labelText: 'الجهة'),
                   child: Text(
                     'مدني — بدون جهة تابعة',
-                    style: GoogleFonts.tajawal(color: MsdColors.sub),
+                    style: TextStyle(color: MsdColors.sub),
                   ),
                 ),
               ],
@@ -439,12 +438,12 @@ class _BookingScreenState extends State<BookingScreen> {
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: left <= 0 ? const Color(0x14B42318) : const Color(0x140F8F86),
+              color: left <= 0 ? MsdTokens.dangerWash : MsdTokens.cyanWash,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
               left <= 0 ? 'ممتلئة' : 'متاح $left',
-              style: GoogleFonts.tajawal(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: left <= 0 ? MsdColors.danger : MsdColors.cyan,
@@ -481,11 +480,11 @@ class _BookingScreenState extends State<BookingScreen> {
                             children: [
                               Text(
                                 'تاريخ الموعد',
-                                style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub),
+                                style: TextStyle(fontSize: 12, color: MsdColors.sub),
                               ),
                               Text(
                                 _dateIso,
-                                style: GoogleFonts.ibmPlexMono(
+                                style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,
                                   color: MsdColors.ink,
@@ -593,7 +592,7 @@ class _BookingScreenState extends State<BookingScreen> {
           child: Text(
             'لا توجد حجوزات لهذه الجهة',
             textAlign: TextAlign.center,
-            style: GoogleFonts.tajawal(color: MsdColors.sub),
+            style: TextStyle(color: MsdColors.sub),
           ),
         ),
       );
@@ -642,7 +641,7 @@ class _CatChip extends StatelessWidget {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.tajawal(
+            style: TextStyle(
               fontWeight: FontWeight.w700,
               color: selected ? Colors.white : MsdColors.sub,
             ),
@@ -680,8 +679,8 @@ class _BookingCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${booking['code']}',
-                  style: GoogleFonts.ibmPlexMono(
-                    color: const Color(0xFF9FD8CF),
+                  style: TextStyle(
+                    color: MsdTokens.mintWash,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1,
                   ),
@@ -691,7 +690,7 @@ class _BookingCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${booking['patientName']}',
-                  style: GoogleFonts.tajawal(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
                     color: MsdColors.ink,
@@ -700,14 +699,14 @@ class _BookingCard extends StatelessWidget {
               ),
               Text(
                 '${booking['statusAr']}',
-                style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub),
+                style: TextStyle(fontSize: 12, color: MsdColors.sub),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             'عيادة ${booking['clinic']} · ${booking['date']} · ${booking['slot']}',
-            style: GoogleFonts.tajawal(fontSize: 13, color: MsdColors.sub),
+            style: TextStyle(fontSize: 13, color: MsdColors.sub),
           ),
           if (onEdit != null || onCancel != null) ...[
             const SizedBox(height: 10),

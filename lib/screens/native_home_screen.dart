@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../data/command_data.dart';
@@ -17,6 +16,7 @@ import 'ops/ops_fleet_screen.dart';
 import 'ops/ops_training_screen.dart';
 import 'ops/ops_units_screen.dart';
 import 'ops/ops_warehouses_screen.dart';
+import '../theme/tokens.dart';
 
 /// Mobile central command — mirrors web لوحة القيادة المركزية (no facility board / stations strip).
 class NativeHomeScreen extends StatefulWidget {
@@ -38,17 +38,17 @@ class NativeHomeScreen extends StatefulWidget {
 }
 
 class _NativeHomeScreenState extends State<NativeHomeScreen> {
-  static const _ink = Color(0xFF143139);
-  static const _sub = Color(0xFF4C6B71);
-  static const _faint = Color(0xFF86A1A1);
-  static const _line = Color(0x1F143139);
-  static const _page = Color(0xFFEAF6FB);
-  static const _cyan = Color(0xFF0F8F86);
-  static const _teal = Color(0xFF136B6B);
-  static const _blue = Color(0xFF3A7BA6);
-  static const _green = Color(0xFF2E9E6C);
-  static const _amber = Color(0xFFC0913A);
-  static const _red = Color(0xFFCF5A52);
+  static const _ink = MsdTokens.ink;
+  static const _sub = MsdTokens.sub;
+  static const _faint = MsdTokens.faint;
+  static const _line = MsdTokens.line;
+  static const _page = MsdTokens.page;
+  static const _cyan = MsdTokens.cyan;
+  static const _teal = MsdTokens.teal;
+  static const _blue = MsdTokens.blue;
+  static const _green = MsdTokens.successFill;
+  static const _amber = MsdTokens.amberFill;
+  static const _red = MsdTokens.danger;
   static const _noData = 'لا توجد بيانات';
 
   CommandData? _data = CommandRepository.cached;
@@ -163,15 +163,15 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0x2214363C)),
+            border: Border.all(color: MsdTokens.deepWash),
             gradient: const LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
-              colors: [Color(0xFFFFFFFF), Color(0xFFF3FAF9)],
+              colors: [MsdTokens.white, MsdTokens.paper],
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0D3038).withValues(alpha: 0.08),
+                color: MsdTokens.deep.withValues(alpha: 0.08),
                 blurRadius: 18,
                 offset: const Offset(0, 8),
               ),
@@ -183,16 +183,23 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
               Row(
                 children: [
                   Material(
-                    color: const Color(0xFF123840),
+                    color: MsdTokens.deep,
                     borderRadius: BorderRadius.circular(12),
-                    child: InkWell(
-                      onTap: widget.onOpenMenu,
-                      borderRadius: BorderRadius.circular(12),
-                      child: const SizedBox(
-                        width: 42,
-                        height: 42,
-                        child: Icon(Icons.menu_rounded, color: Color(0xFFE8FFF8), size: 22),
+                    child: Semantics(
+                      label: 'القائمة',
+                      button: true,
+                      child: Tooltip(
+                      message: 'القائمة',
+                      child: InkWell(
+                        onTap: widget.onOpenMenu,
+                        borderRadius: BorderRadius.circular(12),
+                        child: const SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Icon(Icons.menu_rounded, color: MsdTokens.mintWash, size: 22),
+                        ),
                       ),
+                    ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -204,7 +211,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                           'لوحة القيادة المركزية',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.tajawal(
+                          style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16.5,
                             height: 1.15,
@@ -226,8 +233,8 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                               role,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.tajawal(
-                                fontSize: 11.5,
+                              style: TextStyle(
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: _teal,
                               ),
@@ -240,7 +247,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              Container(height: 1, color: const Color(0x1614363C)),
+              Container(height: 1, color: MsdTokens.lineSoft),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -249,16 +256,16 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                       'رؤية شاملة وإحاطة دقيقة',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.tajawal(fontSize: 12.5, fontWeight: FontWeight.w600, color: _sub),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: _sub),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF0F7F6),
+                      color: MsdTokens.paper,
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: const Color(0x1A14363C)),
+                      border: Border.all(color: MsdTokens.lineSoft),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -275,7 +282,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                         const SizedBox(width: 6),
                         Text(
                           _stamp,
-                          style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w700, color: _sub),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _sub),
                         ),
                       ],
                     ),
@@ -353,7 +360,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
         children: [
           _cardHead(num: '01', title: 'الأحداث الطبية', tone: _cyan, icon: 'pulse'),
           _primaryValue(_stat('الأحداث الطبية', 'إجمالي الأحداث', has ? _fmt(all.length) : _noData), 40),
-          Text('إجمالي الأحداث', style: GoogleFonts.tajawal(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+          Text('إجمالي الأحداث', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -365,7 +372,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          Text('المفتوحة حسب الخطورة', style: GoogleFonts.tajawal(fontSize: 11, fontWeight: FontWeight.w700, color: _faint)),
+          Text('المفتوحة حسب الخطورة', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _faint)),
           const SizedBox(height: 8),
           _sev('عاجل', has ? '${rank(0)}' : _noData, _red),
           _sev('مرتفع / متوسط', has ? '${rank(1)}' : _noData, _amber),
@@ -377,9 +384,9 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
 
   Widget _primaryValue(String v, double size) {
     if (v == _noData) {
-      return Text(_noData, style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.w800, color: _faint, height: 1.3));
+      return Text(_noData, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _faint, height: 1.3));
     }
-    return Text(v, style: GoogleFonts.tajawal(fontSize: size, fontWeight: FontWeight.w900, color: _ink, height: 1));
+    return Text(v, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, color: _ink, height: 1));
   }
 
   List<Widget> _domainCards() {
@@ -518,7 +525,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                 children: [
                   _primaryValue(c.primary, 32),
                   const SizedBox(width: 8),
-                  Text(c.primaryLabel, style: GoogleFonts.tajawal(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+                  Text(c.primaryLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -555,7 +562,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
         children: [
           _cardHead(num: '08', title: 'التدريب والتطوير', tone: _blue, icon: 'cap'),
           _primaryValue(_stat('التدريب والتطوير', 'إجمالي البرامج', _noData), 36),
-          Text('إجمالي البرامج', style: GoogleFonts.tajawal(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+          Text('إجمالي البرامج', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -582,8 +589,8 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(num, style: GoogleFonts.tajawal(fontSize: 11, fontWeight: FontWeight.w800, color: _faint)),
-                Text(title, style: GoogleFonts.tajawal(fontSize: 15, fontWeight: FontWeight.w800, color: _ink)),
+                Text(num, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _faint)),
+                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: _ink)),
               ],
             ),
           ),
@@ -596,7 +603,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0x0C134048),
+        color: MsdTokens.lineSoft,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _line),
       ),
@@ -611,16 +618,16 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                 child: Text(_noData,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.tajawal(fontSize: 10.5, fontWeight: FontWeight.w700, color: _faint)),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _faint)),
               ),
             )
           else
             Text(value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w900, color: valueColor, height: 1.1)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: valueColor, height: 1.1)),
           const SizedBox(height: 2),
-          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.tajawal(fontSize: 10.5, fontWeight: FontWeight.w600, color: _faint)),
+          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _faint)),
         ],
       ),
     );
@@ -639,11 +646,11 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
         children: [
           Container(width: 8, height: 8, decoration: BoxDecoration(color: tone, shape: BoxShape.circle)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.tajawal(fontWeight: FontWeight.w700, fontSize: 12.5, color: _ink))),
+          Expanded(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: _ink))),
           Text(value,
               style: value == _noData
-                  ? GoogleFonts.tajawal(fontWeight: FontWeight.w700, fontSize: 11.5, color: _faint)
-                  : GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 15, color: tone)),
+                  ? TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: _faint)
+                  : TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: tone)),
         ],
       ),
     );
@@ -680,8 +687,8 @@ class _Shell extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x1F143139)),
-        boxShadow: const [BoxShadow(color: Color(0x24102F36), blurRadius: 20, offset: Offset(0, 10))],
+        border: Border.all(color: MsdTokens.line),
+        boxShadow: const [BoxShadow(color: MsdTokens.deepWash, blurRadius: 20, offset: Offset(0, 10))],
       ),
       foregroundDecoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),

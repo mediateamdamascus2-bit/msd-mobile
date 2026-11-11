@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../services/new_item_watcher.dart';
@@ -164,7 +163,7 @@ class _DeptScreenState extends State<DeptScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
-                      colors: [Color(0xFF1A6B8A), Color(0xFF145A75), Color(0xFF0F4A62)],
+                      colors: [MsdTokens.teal, MsdTokens.teal, MsdTokens.deep],
                     ),
                   ),
                   child: Row(
@@ -175,8 +174,8 @@ class _DeptScreenState extends State<DeptScreen> {
                           children: [
                             Text(
                               'محطة قسم تحويل · مشفى حرستا',
-                              style: GoogleFonts.tajawal(
-                                color: const Color(0xFFB8E0F0),
+                              style: TextStyle(
+                                color: MsdTokens.onDeep,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -184,7 +183,7 @@ class _DeptScreenState extends State<DeptScreen> {
                             const SizedBox(height: 4),
                             Text(
                               widget.department,
-                              style: GoogleFonts.tajawal(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 26,
                                 fontWeight: FontWeight.w800,
@@ -192,7 +191,7 @@ class _DeptScreenState extends State<DeptScreen> {
                             ),
                             Text(
                               'الحالات المحوّلة من العيادات',
-                              style: GoogleFonts.tajawal(color: const Color(0xFFD5EEF7), fontSize: 13),
+                              style: TextStyle(color: MsdTokens.onDeep, fontSize: 13),
                             ),
                           ],
                         ),
@@ -224,7 +223,7 @@ class _DeptScreenState extends State<DeptScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('طابور القسم', style: GoogleFonts.tajawal(fontSize: 17, fontWeight: FontWeight.w800)),
+                          Text('طابور القسم', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                           const SizedBox(height: 10),
                           if (_loading)
                             const Padding(
@@ -235,7 +234,7 @@ class _DeptScreenState extends State<DeptScreen> {
                             Text(
                               'لا توجد حالات',
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.tajawal(color: MsdColors.sub),
+                              style: TextStyle(color: MsdColors.sub),
                             )
                           else
                             ..._queue.map((item) {
@@ -244,10 +243,10 @@ class _DeptScreenState extends State<DeptScreen> {
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 8),
                                 decoration: BoxDecoration(
-                                  color: on ? const Color(0x337EC8E3) : Colors.white,
+                                  color: on ? MsdTokens.surface : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: on ? MsdColors.cyan : const Color(0x334BA3C7),
+                                    color: on ? MsdColors.cyan : MsdTokens.cyanLine,
                                     width: on ? 1.6 : 1,
                                   ),
                                 ),
@@ -255,11 +254,11 @@ class _DeptScreenState extends State<DeptScreen> {
                                   onTap: () => setState(() => _selectedId = id),
                                   title: Text(
                                     item['patientName']?.toString() ?? '',
-                                    style: GoogleFonts.tajawal(fontWeight: FontWeight.w800),
+                                    style: TextStyle(fontWeight: FontWeight.w800),
                                   ),
                                   subtitle: Text(
                                     '${item['caseNumber']} · ${item['statusAr'] ?? ''}',
-                                    style: GoogleFonts.ibmPlexMono(fontSize: 11, color: MsdColors.sub),
+                                    style: TextStyle(fontSize: 12, color: MsdColors.sub),
                                   ),
                                 ),
                               );
@@ -275,11 +274,11 @@ class _DeptScreenState extends State<DeptScreen> {
                           children: [
                             Text(
                               selected['patientName']?.toString() ?? '',
-                              style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w800),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                             ),
                             Text(
                               '${selected['caseNumber']} · من عيادة ${selected['currentClinic'] ?? selected['bookedClinic'] ?? '—'}',
-                              style: GoogleFonts.tajawal(color: MsdColors.sub),
+                              style: TextStyle(color: MsdColors.sub),
                             ),
                             const SizedBox(height: 14),
                             MsdFieldShell(
@@ -306,7 +305,7 @@ class _DeptScreenState extends State<DeptScreen> {
                                 side: const BorderSide(color: MsdColors.amber),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
-                              child: Text('إعادة للعيادة', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                              child: Text('إعادة للعيادة', style: TextStyle(fontWeight: FontWeight.w800)),
                             ),
                           ],
                         ),
@@ -328,13 +327,13 @@ class _DeptScreenState extends State<DeptScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
-          Text(value, style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
+          Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
         ],
       ),
     );
@@ -347,7 +346,7 @@ class _DeptScreenState extends State<DeptScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: child,
     );
@@ -358,12 +357,12 @@ class _DeptScreenState extends State<DeptScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: error ? const Color(0x1AB42318) : const Color(0x1A2E9E6C),
+        color: error ? MsdTokens.dangerWash : MsdTokens.successWash,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         text,
-        style: GoogleFonts.tajawal(
+        style: TextStyle(
           color: error ? MsdColors.danger : MsdColors.green,
           fontWeight: FontWeight.w700,
         ),

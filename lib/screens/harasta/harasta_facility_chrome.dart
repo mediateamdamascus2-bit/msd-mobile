@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/app_theme.dart';
 
@@ -9,10 +8,10 @@ abstract final class Hp {
   static const sub = MsdColors.sub;
   static const faint = MsdColors.faint;
   static const line = MsdColors.line;
-  static const drawerDeep = Color(0xFF0F2F36);
-  static const drawerMid = Color(0xFF16464F);
-  static const drawerAccent = Color(0xFF0E8A82);
-  static const mint = Color(0xFF5EE0C4);
+  static const drawerDeep = MsdTokens.deep;
+  static const drawerMid = MsdTokens.deep;
+  static const drawerAccent = MsdTokens.cyan;
+  static const mint = MsdTokens.sky;
   /// App bar + selected chips — same family as drawer / hero gradient.
   static const appBar = drawerDeep;
   static const teal = drawerMid;
@@ -73,9 +72,9 @@ class HpIntro extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Hp.drawerDeep, Hp.drawerMid, Color(0xFF0B6F6A)],
+          colors: [Hp.drawerDeep, Hp.drawerMid, MsdTokens.teal],
         ),
-        boxShadow: const [BoxShadow(color: Color(0x660F2F36), blurRadius: 24, offset: Offset(0, 12))],
+        boxShadow: const [BoxShadow(color: MsdTokens.deepWash, blurRadius: 24, offset: Offset(0, 12))],
       ),
       child: Stack(
         children: [
@@ -96,20 +95,20 @@ class HpIntro extends StatelessWidget {
             children: [
               Text(
                 eyebrow.toUpperCase(),
-                style: GoogleFonts.tajawal(
-                  fontSize: 11,
+                style: TextStyle(
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.55,
-                  color: const Color(0xFF9FD8CF),
+                  color: MsdTokens.mintWash,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 lead,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontSize: 15,
                   height: 1.5,
-                  color: const Color(0xFFF2F9F6),
+                  color: MsdTokens.onDeep,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -137,8 +136,8 @@ class HpPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x33A8D4E6)),
-        boxShadow: const [BoxShadow(color: Color(0x1A1A6B8A), blurRadius: 18, offset: Offset(0, 8))],
+        border: Border.all(color: MsdTokens.skyLine),
+        boxShadow: const [BoxShadow(color: MsdTokens.tealWash, blurRadius: 18, offset: Offset(0, 8))],
       ),
       child: child,
     );
@@ -157,10 +156,10 @@ class HpSectionHead extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w800, color: Hp.ink)),
+          Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Hp.ink)),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
-            Text(subtitle!, style: GoogleFonts.tajawal(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
+            Text(subtitle!, style: TextStyle(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
           ],
         ],
       ),
@@ -189,11 +188,11 @@ class HpChips extends StatelessWidget {
               decoration: BoxDecoration(
                 color: value == o.$1 ? Hp.teal : Colors.white,
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: value == o.$1 ? Hp.teal : const Color(0x33A8D4E6)),
+                border: Border.all(color: value == o.$1 ? Hp.teal : MsdTokens.skyLine),
               ),
               child: Text(
                 o.$2,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
                   color: value == o.$1 ? Colors.white : Hp.sub,
@@ -220,7 +219,7 @@ class HpUnitRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: Hp.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x33A8D4E6)),
+        border: Border.all(color: MsdTokens.skyLine),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,9 +228,9 @@ class HpUnitRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14, color: Hp.ink)),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Hp.ink)),
                 const SizedBox(height: 3),
-                Text(subtitle, style: GoogleFonts.tajawal(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
+                Text(subtitle, style: TextStyle(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -243,7 +242,7 @@ class HpUnitRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999),
                 border: Border.all(color: Hp.teal.withValues(alpha: 0.28)),
               ),
-              child: Text(badge!, style: GoogleFonts.tajawal(fontSize: 11, fontWeight: FontWeight.w800, color: Hp.teal)),
+              child: Text(badge!, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Hp.teal)),
             ),
         ],
       ),
@@ -273,8 +272,8 @@ class HpFloorCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x33A8D4E6)),
-        boxShadow: const [BoxShadow(color: Color(0x1A1A6B8A), blurRadius: 16, offset: Offset(0, 8))],
+        border: Border.all(color: MsdTokens.skyLine),
+        boxShadow: const [BoxShadow(color: MsdTokens.tealWash, blurRadius: 16, offset: Offset(0, 8))],
       ),
       child: Row(
         children: [
@@ -291,9 +290,9 @@ class HpFloorCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(floor, style: GoogleFonts.tajawal(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
+                Text(floor, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
                 if (side.isNotEmpty)
-                  Text(side, style: GoogleFonts.tajawal(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFFBFE6E2))),
+                  Text(side, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: MsdTokens.mintWash)),
               ],
             ),
           ),
@@ -302,9 +301,9 @@ class HpFloorCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(unit, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink)),
+                Text(unit, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink)),
                 const SizedBox(height: 3),
-                Text(note, style: GoogleFonts.tajawal(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
+                Text(note, style: TextStyle(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -327,21 +326,21 @@ class HpStaffCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x33A8D4E6)),
+        border: Border.all(color: MsdTokens.skyLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 12.5, fontWeight: FontWeight.w700, color: Hp.sub)),
+          Text(label, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Hp.sub)),
           const SizedBox(height: 4),
-          Text('$value', style: GoogleFonts.tajawal(fontSize: 26, fontWeight: FontWeight.w900, color: Hp.ink)),
+          Text('$value', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Hp.ink)),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
               value: bar.clamp(0.0, 1.0),
               minHeight: 6,
-              backgroundColor: const Color(0x331A6B8A),
+              backgroundColor: MsdTokens.tealWash,
               color: Hp.teal,
             ),
           ),
@@ -366,7 +365,7 @@ class HpOpsCard extends StatelessWidget {
   final String? tone;
 
   Color get _valueColor => switch (tone) {
-        'emergency' => const Color(0xFFCF5A52),
+        'emergency' => MsdTokens.danger,
         'special' => Hp.amber,
         'calm' => Hp.data,
         _ => Hp.ink,
@@ -379,18 +378,18 @@ class HpOpsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x33A8D4E6)),
-        boxShadow: const [BoxShadow(color: Color(0x140F2F36), blurRadius: 14, offset: Offset(0, 6))],
+        border: Border.all(color: MsdTokens.skyLine),
+        boxShadow: const [BoxShadow(color: MsdTokens.lineSoft, blurRadius: 14, offset: Offset(0, 6))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 11.5, color: Hp.faint, fontWeight: FontWeight.w600)),
+          Text(label, style: TextStyle(fontSize: 12, color: Hp.faint, fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text(value, style: GoogleFonts.tajawal(fontSize: 24, fontWeight: FontWeight.w900, color: _valueColor, height: 1.05)),
+          Text(value, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: _valueColor, height: 1.05)),
           if (detail != null) ...[
             const SizedBox(height: 3),
-            Text(detail!, style: GoogleFonts.tajawal(fontSize: 11, color: Hp.cyan, fontWeight: FontWeight.w700)),
+            Text(detail!, style: TextStyle(fontSize: 12, color: Hp.cyan, fontWeight: FontWeight.w700)),
           ],
         ],
       ),
@@ -406,11 +405,11 @@ class HpPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color bg, Color fg, Color border) = switch (tone) {
-      'emergency' => (const Color(0x1ACF5A52), const Color(0xFFB42318), const Color(0x40CF5A52)),
-      'special' => (const Color(0x1AC0913A), const Color(0xFF8A6A28), const Color(0x40C0913A)),
-      'ok' => (const Color(0x1A0E8A82), Hp.data, const Color(0x400E8A82)),
-      'muted' => (const Color(0x1416464F), Hp.sub, const Color(0x2216464F)),
-      _ => (const Color(0x1416464F), Hp.teal, const Color(0x3316464F)),
+      'emergency' => (MsdTokens.dangerWash, MsdTokens.danger, MsdTokens.dangerWash),
+      'special' => (MsdTokens.amberWash, MsdTokens.amberText, MsdTokens.amberWash),
+      'ok' => (MsdTokens.cyanWash, Hp.data, MsdTokens.cyanWash),
+      'muted' => (MsdTokens.lineSoft, Hp.sub, MsdTokens.deepWash),
+      _ => (MsdTokens.lineSoft, Hp.teal, MsdTokens.deepWash),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -419,7 +418,7 @@ class HpPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: border),
       ),
-      child: Text(label, style: GoogleFonts.tajawal(fontSize: 11, fontWeight: FontWeight.w800, color: fg)),
+      child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: fg)),
     );
   }
 }
@@ -457,8 +456,8 @@ class HpFileCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x33A8D4E6)),
-        boxShadow: const [BoxShadow(color: Color(0x120F2F36), blurRadius: 16, offset: Offset(0, 7))],
+        border: Border.all(color: MsdTokens.skyLine),
+        boxShadow: const [BoxShadow(color: MsdTokens.lineSoft, blurRadius: 16, offset: Offset(0, 7))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,14 +472,14 @@ class HpFileCard extends StatelessWidget {
                 ),
                 child: Text(
                   caseNumber.isEmpty ? '—' : caseNumber,
-                  style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w800, color: const Color(0xFFF2F9F6), letterSpacing: 0.2),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: MsdTokens.onDeep, letterSpacing: 0.2),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   patientName.isEmpty ? 'بدون اسم' : patientName,
-                  style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink, height: 1.25),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink, height: 1.25),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -499,7 +498,7 @@ class HpFileCard extends StatelessWidget {
                   Flexible(
                     child: Text(
                       status,
-                      style: GoogleFonts.tajawal(fontSize: 12.5, fontWeight: FontWeight.w700, color: Hp.sub, height: 1.35),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Hp.sub, height: 1.35),
                     ),
                   ),
                 ],
@@ -509,7 +508,7 @@ class HpFileCard extends StatelessWidget {
                     child: Text(
                       location,
                       textAlign: TextAlign.end,
-                      style: GoogleFonts.tajawal(fontSize: 12.5, fontWeight: FontWeight.w600, color: Hp.faint, height: 1.35),
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Hp.faint, height: 1.35),
                     ),
                   ),
               ],
@@ -543,9 +542,9 @@ class HpListTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: accent ? const Color(0x14C0913A) : Colors.white,
+        color: accent ? MsdTokens.amberWash : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accent ? const Color(0x59C0913A) : const Color(0x33A8D4E6)),
+        border: Border.all(color: accent ? MsdTokens.amberWash : MsdTokens.skyLine),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -554,9 +553,9 @@ class HpListTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14, color: Hp.ink)),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Hp.ink)),
                 const SizedBox(height: 3),
-                Text(subtitle, style: GoogleFonts.tajawal(fontSize: 12.5, height: 1.4, color: Hp.sub, fontWeight: FontWeight.w600)),
+                Text(subtitle, style: TextStyle(fontSize: 12.5, height: 1.4, color: Hp.sub, fontWeight: FontWeight.w600)),
               ],
             ),
           ),

@@ -241,7 +241,7 @@ class _HasiaCasesScreenState extends State<HasiaCasesScreen> {
             },
             icon: Icon(_archive ? Icons.folder_open : Icons.archive_outlined),
           ),
-          IconButton(onPressed: _reload, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _reload, icon: const Icon(Icons.refresh)),
         ],
       ),
       floatingActionButton: _archive

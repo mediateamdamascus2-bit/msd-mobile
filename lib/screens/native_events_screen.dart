@@ -177,7 +177,7 @@ class _NativeEventsScreenState extends State<NativeEventsScreen> {
       appBar: AppBar(
         title: const Text('الأحداث الطبية'),
         actions: [
-          IconButton(onPressed: _bootstrap, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _bootstrap, icon: const Icon(Icons.refresh)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

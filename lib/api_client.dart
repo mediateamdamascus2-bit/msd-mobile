@@ -76,6 +76,9 @@ class ApiClient {
     if (_isAccountDisabled(res)) {
       throw Exception(accountDisabledMessage);
     }
+    if (res.statusCode == 429 || res.statusCode == 423) {
+      throw Exception('الحساب مقفل مؤقتًا بعد محاولات كثيرة');
+    }
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('تعذر تسجيل الدخول (${res.statusCode})');
     }
@@ -115,6 +118,16 @@ class ApiClient {
       await _storage.delete(key: _refreshKey);
     } else {
       await _storage.write(key: _refreshKey, value: token);
+    }
+  }
+
+  /// GET `/health` for the login status dot. Does not refresh or clear the session.
+  Future<bool> serverReachable() async {
+    try {
+      final res = await http.get(Uri.parse('$_base/health')).timeout(const Duration(seconds: 4));
+      return res.statusCode >= 200 && res.statusCode < 300;
+    } catch (_) {
+      return false;
     }
   }
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../services/new_item_watcher.dart';
@@ -319,7 +318,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
-                      colors: [Color(0xFF1A6B8A), Color(0xFF145A75), Color(0xFF0F4A62)],
+                      colors: [MsdTokens.teal, MsdTokens.teal, MsdTokens.deep],
                     ),
                   ),
                   child: Row(
@@ -330,8 +329,8 @@ class _ClinicScreenState extends State<ClinicScreen> {
                           children: [
                             Text(
                               'محطة مستقلة · مشفى الشرطة في حرستا',
-                              style: GoogleFonts.tajawal(
-                                color: const Color(0xFFB8E0F0),
+                              style: TextStyle(
+                                color: MsdTokens.onDeep,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -339,7 +338,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                             const SizedBox(height: 4),
                             Text(
                               _title,
-                              style: GoogleFonts.tajawal(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 26,
                                 fontWeight: FontWeight.w800,
@@ -347,7 +346,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                             ),
                             Text(
                               'طابور المحوّلين من الاستقبال',
-                              style: GoogleFonts.tajawal(color: const Color(0xFFD5EEF7), fontSize: 13),
+                              style: TextStyle(color: MsdTokens.onDeep, fontSize: 13),
                             ),
                           ],
                         ),
@@ -389,7 +388,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('طابور الانتظار', style: GoogleFonts.tajawal(fontSize: 17, fontWeight: FontWeight.w800)),
+                          Text('طابور الانتظار', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                           const SizedBox(height: 10),
                           if (_loading)
                             const Padding(
@@ -400,7 +399,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                             Text(
                               'لا يوجد مرضى في الطابور',
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.tajawal(color: MsdColors.sub),
+                              style: TextStyle(color: MsdColors.sub),
                             )
                           else
                             ..._queue.map((item) {
@@ -409,10 +408,10 @@ class _ClinicScreenState extends State<ClinicScreen> {
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 8),
                                 decoration: BoxDecoration(
-                                  color: on ? const Color(0x337EC8E3) : Colors.white,
+                                  color: on ? MsdTokens.surface : Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: on ? MsdColors.cyan : const Color(0x334BA3C7),
+                                    color: on ? MsdColors.cyan : MsdTokens.cyanLine,
                                     width: on ? 1.6 : 1,
                                   ),
                                 ),
@@ -420,11 +419,11 @@ class _ClinicScreenState extends State<ClinicScreen> {
                                   onTap: () => setState(() => _selectedId = id),
                                   title: Text(
                                     item['patientName']?.toString() ?? '',
-                                    style: GoogleFonts.tajawal(fontWeight: FontWeight.w800),
+                                    style: TextStyle(fontWeight: FontWeight.w800),
                                   ),
                                   subtitle: Text(
                                     '${item['caseNumber']} · ${item['statusAr'] ?? ''}',
-                                    style: GoogleFonts.ibmPlexMono(fontSize: 11, color: MsdColors.sub),
+                                    style: TextStyle(fontSize: 12, color: MsdColors.sub),
                                   ),
                                   trailing: on
                                       ? const Icon(Icons.check_circle, color: MsdColors.teal)
@@ -443,11 +442,11 @@ class _ClinicScreenState extends State<ClinicScreen> {
                           children: [
                             Text(
                               selected['patientName']?.toString() ?? '',
-                              style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w800),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                             ),
                             Text(
                               '${selected['caseNumber']} · ${selected['nationalId'] ?? 'بدون هوية'}',
-                              style: GoogleFonts.tajawal(color: MsdColors.sub),
+                              style: TextStyle(color: MsdColors.sub),
                             ),
                             const SizedBox(height: 14),
                             MsdFieldShell(
@@ -538,7 +537,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                                 side: const BorderSide(color: MsdColors.amber),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
-                              child: Text('إعادة للاستقبال', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                              child: Text('إعادة للاستقبال', style: TextStyle(fontWeight: FontWeight.w800)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton(
@@ -549,7 +548,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                                 side: const BorderSide(color: MsdColors.teal),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
-                              child: Text('تحويل عيادة', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                              child: Text('تحويل عيادة', style: TextStyle(fontWeight: FontWeight.w800)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton(
@@ -560,7 +559,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
                                 side: const BorderSide(color: MsdColors.cyan),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               ),
-                              child: Text('تحويل قسم', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                              child: Text('تحويل قسم', style: TextStyle(fontWeight: FontWeight.w800)),
                             ),
                           ],
                         ),
@@ -582,13 +581,13 @@ class _ClinicScreenState extends State<ClinicScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
-          Text(value, style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w800, color: MsdColors.teal)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
+          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: MsdColors.teal)),
         ],
       ),
     );
@@ -601,7 +600,7 @@ class _ClinicScreenState extends State<ClinicScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: child,
     );
@@ -612,12 +611,12 @@ class _ClinicScreenState extends State<ClinicScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: error ? const Color(0x1AB42318) : const Color(0x1A2E9E6C),
+        color: error ? MsdTokens.dangerWash : MsdTokens.successWash,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         text,
-        style: GoogleFonts.tajawal(
+        style: TextStyle(
           color: error ? MsdColors.danger : MsdColors.green,
           fontWeight: FontWeight.w700,
         ),

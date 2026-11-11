@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 
@@ -16,10 +15,10 @@ class MsdPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = switch (tone) {
-      MsdPillTone.sky => (const Color(0x294BA3C7), MsdColors.teal),
-      MsdPillTone.amber => (const Color(0x33C0913A), const Color(0xFF8A6420)),
-      MsdPillTone.green => (const Color(0x292E9E6C), MsdColors.green),
-      MsdPillTone.danger => (const Color(0x29B42318), MsdColors.danger),
+      MsdPillTone.sky => (MsdTokens.cyanWash, MsdColors.teal),
+      MsdPillTone.amber => (MsdTokens.amberWash, MsdTokens.amberText),
+      MsdPillTone.green => (MsdTokens.successWash, MsdColors.green),
+      MsdPillTone.danger => (MsdTokens.dangerWash, MsdColors.danger),
     };
 
     return Container(
@@ -30,8 +29,8 @@ class MsdPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.tajawal(
-          fontSize: 11,
+        style: TextStyle(
+          fontSize: 12,
           fontWeight: FontWeight.w800,
           color: fg,
         ),
@@ -63,9 +62,9 @@ class MsdSegmented extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0x147EC8E3),
+        color: MsdTokens.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: Row(
         children: [
@@ -88,7 +87,7 @@ class MsdSegmented extends StatelessWidget {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.tajawal(
+            style: TextStyle(
               fontWeight: FontWeight.w800,
               fontSize: 13,
               color: on ? Colors.white : MsdColors.sub,
@@ -121,7 +120,7 @@ class MsdFieldShell extends StatelessWidget {
           padding: const EdgeInsets.only(right: 4, bottom: 6),
           child: Text(
             label,
-            style: GoogleFonts.tajawal(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: MsdColors.teal,
@@ -134,7 +133,7 @@ class MsdFieldShell extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             hint!,
-            style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.faint),
+            style: TextStyle(fontSize: 12, color: MsdColors.faint),
           ),
         ],
       ],
@@ -150,12 +149,12 @@ InputDecoration msdInputDecoration({
 }) {
   final border = OutlineInputBorder(
     borderRadius: BorderRadius.circular(16),
-    borderSide: const BorderSide(color: Color(0x334BA3C7)),
+    borderSide: const BorderSide(color: MsdTokens.cyanLine),
   );
   return InputDecoration(
     hintText: hint,
     filled: true,
-    fillColor: enabled ? Colors.white : const Color(0x66EAF6FB),
+    fillColor: enabled ? Colors.white : MsdTokens.pageWash,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     border: border,
     enabledBorder: border,
@@ -163,7 +162,7 @@ InputDecoration msdInputDecoration({
     focusedBorder: border.copyWith(
       borderSide: const BorderSide(color: MsdColors.cyan, width: 1.8),
     ),
-    hintStyle: GoogleFonts.tajawal(color: MsdColors.faint, fontSize: 13),
+    hintStyle: TextStyle(color: MsdColors.faint, fontSize: 13),
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,
   );
@@ -223,7 +222,7 @@ class MsdPrimaryButton extends StatelessWidget {
                     child: Text(
                       label,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 15),
+                      style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
                     ),
                   ),
                 ],

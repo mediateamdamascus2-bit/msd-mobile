@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 
@@ -19,9 +18,9 @@ class StationBackdrop extends StatelessWidget {
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
           colors: [
-            Color(0xFFE8F4F2),
-            Color(0xFFF2F7F6),
-            Color(0xFFDCECE9),
+            MsdTokens.mintWash,
+            MsdTokens.paper,
+            MsdTokens.mist,
           ],
         ),
       ),
@@ -39,7 +38,7 @@ class _LatticePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0x140F8F86)
+      ..color = MsdTokens.cyanWash
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
@@ -54,8 +53,8 @@ class _LatticePainter extends CustomPainter {
     final glow = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0x330F8F86),
-          const Color(0x000F8F86),
+          MsdTokens.cyanWash,
+          MsdTokens.transparent,
         ],
       ).createShader(Rect.fromCircle(center: Offset(size.width * 0.85, 40), radius: 160));
     canvas.drawCircle(Offset(size.width * 0.85, 40), 160, glow);
@@ -90,7 +89,7 @@ class StationSection extends StatelessWidget {
         border: Border.all(color: MsdColors.line),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0A143139),
+            color: MsdTokens.lineSoft,
             blurRadius: 18,
             offset: Offset(0, 8),
           ),
@@ -107,8 +106,8 @@ class StationSection extends StatelessWidget {
                   children: [
                     Text(
                       eyebrow,
-                      style: GoogleFonts.ibmPlexMono(
-                        fontSize: 11,
+                      style: TextStyle(
+                        fontSize: 12,
                         letterSpacing: 1.2,
                         color: MsdColors.cyan,
                         fontWeight: FontWeight.w600,
@@ -117,7 +116,7 @@ class StationSection extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       title,
-                      style: GoogleFonts.tajawal(
+                      style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                         color: MsdColors.ink,
@@ -179,11 +178,11 @@ class MedicalMark extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF2BB3A8), Color(0xFF0F8F86), Color(0xFF0B5F5A)],
+            colors: [MsdTokens.cyan, MsdTokens.cyan, MsdTokens.teal],
           ),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x400B2B31),
+              color: MsdTokens.deepWash,
               blurRadius: 14,
               offset: Offset(0, 6),
             ),
@@ -231,7 +230,7 @@ class StationHero extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF1C4A54), Color(0xFF0F8F86), Color(0xFF123840)],
+          colors: [MsdTokens.deep, MsdTokens.cyan, MsdTokens.deep],
         ),
       ),
       child: Stack(
@@ -258,7 +257,7 @@ class StationHero extends StatelessWidget {
                   Expanded(
                     child: Text(
                       brand,
-                      style: GoogleFonts.tajawal(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -281,18 +280,18 @@ class StationHero extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 headline,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFFD7F0EB),
+                  color: MsdTokens.mintWash,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: GoogleFonts.tajawal(
+                style: TextStyle(
                   fontSize: 13,
-                  color: const Color(0xFF9FD8CF),
+                  color: MsdTokens.mintWash,
                 ),
               ),
             ],
@@ -370,7 +369,7 @@ class _TabBtn extends StatelessWidget {
             child: Text(
               label,
               textAlign: TextAlign.center,
-              style: GoogleFonts.tajawal(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
                 color: selected ? Colors.white : MsdColors.sub,
@@ -410,9 +409,9 @@ class SuccessBanner extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0x142E9E6C),
+          color: MsdTokens.successWash,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0x552E9E6C)),
+          border: Border.all(color: MsdTokens.successWash),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -424,7 +423,7 @@ class SuccessBanner extends StatelessWidget {
                 Expanded(
                   child: Text(
                     message,
-                    style: GoogleFonts.tajawal(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: MsdColors.green,
                     ),
@@ -441,7 +440,7 @@ class SuccessBanner extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${b['patientName']} · ${b['slot']}',
-                        style: GoogleFonts.tajawal(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: MsdColors.ink,
                         ),
@@ -455,10 +454,10 @@ class SuccessBanner extends StatelessWidget {
                       ),
                       child: Text(
                         code,
-                        style: GoogleFonts.ibmPlexMono(
+                        style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
-                          color: const Color(0xFF9FD8CF),
+                          color: MsdTokens.mintWash,
                           letterSpacing: 1.5,
                         ),
                       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/app_theme.dart';
 
@@ -47,14 +46,14 @@ abstract final class MsdNotify {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, color: MsdColors.ink),
+                style: TextStyle(fontWeight: FontWeight.w800, color: MsdColors.ink),
               ),
             ),
           ],
         ),
         content: Text(
           message.replaceFirst('Exception: ', ''),
-          style: GoogleFonts.tajawal(height: 1.45, color: MsdColors.sub, fontWeight: FontWeight.w600),
+          style: TextStyle(height: 1.45, color: MsdColors.sub, fontWeight: FontWeight.w600),
         ),
         actions: [
           FilledButton(

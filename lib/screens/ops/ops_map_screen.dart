@@ -5,6 +5,7 @@ import '../../data/command_data.dart';
 import '../../theme/cmd_icon.dart';
 import 'ops_chrome.dart';
 import 'ops_live.dart';
+import '../../theme/tokens.dart';
 
 enum _Layer { event, ambulance, hospital, prison, point, warehouse }
 
@@ -302,7 +303,7 @@ class _OpsMapScreenState extends State<OpsMapScreen> {
                     Positioned(
                       left: w * label.$2,
                       top: h * label.$3,
-                      child: Text(label.$1, style: opsText(10.5, w: FontWeight.w700, color: OpsColors.faint)),
+                      child: Text(label.$1, style: opsText(12, w: FontWeight.w700, color: OpsColors.faint)),
                     ),
                   for (final a in visible)
                     () {
@@ -337,7 +338,7 @@ class _OpsMapScreenState extends State<OpsMapScreen> {
                   Positioned(
                     bottom: 8,
                     right: 10,
-                    child: Text('MAP PLACEHOLDER', style: opsText(9.5, w: FontWeight.w800, color: OpsColors.faint)),
+                    child: Text('MAP PLACEHOLDER', style: opsText(12, w: FontWeight.w800, color: OpsColors.faint)),
                   ),
                 ],
               );
@@ -376,7 +377,7 @@ class _OpsMapScreenState extends State<OpsMapScreen> {
                   children: [
                     Text(a.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: opsText(13, w: FontWeight.w800)),
                     Text('${a.id} · ${a.sub} · ${a.province}',
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: opsText(11, color: OpsColors.faint)),
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: opsText(12, color: OpsColors.faint)),
                   ],
                 ),
               ),
@@ -396,11 +397,11 @@ class _GridPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [Color(0xFFDDF0F4), Color(0xFFCFE7EA)],
+        colors: [MsdTokens.mist, MsdTokens.mist],
       ).createShader(Offset.zero & size);
     canvas.drawRect(Offset.zero & size, bg);
     final line = Paint()
-      ..color = const Color(0x1F143139)
+      ..color = MsdTokens.line
       ..strokeWidth = 1;
     const step = 36.0;
     for (var x = 0.0; x < size.width; x += step) {
@@ -410,7 +411,7 @@ class _GridPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), line);
     }
     // Soft land blob (decorative placeholder).
-    final land = Paint()..color = const Color(0x330F8F86);
+    final land = Paint()..color = MsdTokens.cyanWash;
     final path = Path()
       ..moveTo(size.width * 0.12, size.height * 0.2)
       ..quadraticBezierTo(size.width * 0.5, size.height * 0.02, size.width * 0.92, size.height * 0.12)

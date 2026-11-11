@@ -151,7 +151,7 @@ class _HasiaInmatesScreenState extends State<HasiaInmatesScreen> {
       appBar: AppBar(
         title: const Text('سجل النزلاء'),
         actions: [
-          IconButton(onPressed: _reload, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _reload, icon: const Icon(Icons.refresh)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

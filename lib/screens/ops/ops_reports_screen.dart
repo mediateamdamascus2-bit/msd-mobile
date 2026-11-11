@@ -146,7 +146,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text('${x.$2}', style: opsText(10, w: FontWeight.w800, color: OpsColors.faint)),
+                                    Text('${x.$2}', style: opsText(12, w: FontWeight.w800, color: OpsColors.faint)),
                                     const SizedBox(height: 3),
                                     Expanded(
                                       child: Row(
@@ -159,7 +159,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text(x.$1, style: opsText(10, color: OpsColors.faint)),
+                                    Text(x.$1, style: opsText(12, color: OpsColors.faint)),
                                   ],
                                 ),
                               ),
@@ -204,7 +204,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
         children: [
           Container(width: 9, height: 9, decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(3))),
           const SizedBox(width: 5),
-          Text(label, style: opsText(11, w: FontWeight.w700, color: OpsColors.sub)),
+          Text(label, style: opsText(12, w: FontWeight.w700, color: OpsColors.sub)),
         ],
       );
 

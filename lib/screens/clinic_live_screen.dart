@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../theme/app_theme.dart';
@@ -84,7 +83,7 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
-                      colors: [Color(0xFF1A6B8A), Color(0xFF145A75), Color(0xFF0F4A62)],
+                      colors: [MsdTokens.teal, MsdTokens.teal, MsdTokens.deep],
                     ),
                   ),
                   child: Row(
@@ -95,8 +94,8 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                           children: [
                             Text(
                               'محطة مستقلة · مشفى حرستا',
-                              style: GoogleFonts.tajawal(
-                                color: const Color(0xFFB8E0F0),
+                              style: TextStyle(
+                                color: MsdTokens.onDeep,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -104,7 +103,7 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'إحصائيات العيادات',
-                              style: GoogleFonts.tajawal(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w800,
@@ -112,12 +111,13 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                             ),
                             Text(
                               'متابعة مباشرة لطوابير اليوم',
-                              style: GoogleFonts.tajawal(color: const Color(0xFFD5EEF7), fontSize: 13),
+                              style: TextStyle(color: MsdTokens.onDeep, fontSize: 13),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
+                        tooltip: 'تحديث',
                         onPressed: _busy ? null : () => _reload(),
                         icon: const Icon(Icons.refresh, color: Colors.white),
                       ),
@@ -144,10 +144,10 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0x1AB42318),
+                          color: MsdTokens.dangerWash,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(_error!, style: GoogleFonts.tajawal(color: MsdColors.danger, fontWeight: FontWeight.w700)),
+                        child: Text(_error!, style: TextStyle(color: MsdColors.danger, fontWeight: FontWeight.w700)),
                       ),
                     if (_loading && _rows.isEmpty)
                       const Padding(
@@ -169,13 +169,13 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
                             color: Colors.white.withValues(alpha: 0.96),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: waiting > 0 ? const Color(0x66C0913A) : const Color(0x334BA3C7),
+                              color: waiting > 0 ? MsdTokens.amberWash : MsdTokens.cyanLine,
                             ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(title, style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w800)),
+                              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                               const SizedBox(height: 10),
                               Row(
                                 children: [
@@ -210,16 +210,16 @@ class _ClinicLiveScreenState extends State<ClinicLiveScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: hot ? const Color(0x14C0913A) : const Color(0x147EC8E3),
+        color: hot ? MsdTokens.amberWash : MsdTokens.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.sub, fontWeight: FontWeight.w600)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
           Text(
             value,
-            style: GoogleFonts.tajawal(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: hot ? MsdColors.amber : MsdColors.teal,

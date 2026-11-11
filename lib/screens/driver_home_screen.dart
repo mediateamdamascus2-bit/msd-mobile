@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../theme/app_theme.dart';
@@ -89,7 +88,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       appBar: AppBar(
         title: const Text('مهمة السائق'),
         actions: [
-          IconButton(onPressed: _load, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _load, icon: const Icon(Icons.refresh)),
           if (widget.onLogout != null)
             TextButton(onPressed: widget.onLogout, child: const Text('خروج')),
         ],
@@ -99,18 +98,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(name, style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w800)),
+                Text(name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 4),
-                Text('السائق ${widget.driverId}', style: GoogleFonts.tajawal(color: MsdColors.sub)),
+                Text('السائق ${widget.driverId}', style: TextStyle(color: MsdColors.sub)),
                 if (_driver?['status'] != null) ...[
                   const SizedBox(height: 8),
-                  Text('الحالة: ${_driver!['status']}', style: GoogleFonts.tajawal()),
+                  Text('الحالة: ${_driver!['status']}', style: TextStyle()),
                 ],
                 const SizedBox(height: 18),
-                Text('المهام', style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.w800)),
+                Text('المهام', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 8),
                 if (_error != null)
-                  Text(_error!, style: GoogleFonts.tajawal(color: MsdColors.danger))
+                  Text(_error!, style: TextStyle(color: MsdColors.danger))
                 else if (_missions.isEmpty)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 28),
@@ -120,7 +119,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   for (final m in _missions)
                     Card(
                       child: ListTile(
-                        title: Text(m['title']?.toString() ?? m['id']?.toString() ?? 'مهمة', style: GoogleFonts.tajawal(fontWeight: FontWeight.w700)),
+                        title: Text(m['title']?.toString() ?? m['id']?.toString() ?? 'مهمة', style: TextStyle(fontWeight: FontWeight.w700)),
                         subtitle: Text(
                           [
                             m['status']?.toString(),
@@ -128,7 +127,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                             m['to']?.toString(),
                             m['vehicle']?.toString() ?? m['vehicleId']?.toString(),
                           ].whereType<String>().where((s) => s.isNotEmpty).join(' · '),
-                          style: GoogleFonts.tajawal(),
+                          style: TextStyle(),
                         ),
                       ),
                     ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../theme/cmd_icon.dart';
@@ -21,6 +20,7 @@ import 'ops/ops_training_screen.dart';
 import 'ops/ops_units_screen.dart';
 import 'ops/ops_warehouses_screen.dart';
 import 'settings_screen.dart';
+import '../theme/tokens.dart';
 
 class NativeAppShell extends StatefulWidget {
   const NativeAppShell({
@@ -42,10 +42,10 @@ class _NativeAppShellState extends State<NativeAppShell> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   var _index = 0;
 
-  static const _teal = Color(0xFF0F8F86);
-  static const _faint = Color(0xFF6F929A);
-  static const _page = Color(0xFFEAF6FB);
-  static const _deep = Color(0xFF0F2F36);
+  static const _teal = MsdTokens.cyan;
+  static const _faint = MsdTokens.faint;
+  static const _page = MsdTokens.page;
+  static const _deep = MsdTokens.deep;
 
   void _openDrawer() => _scaffoldKey.currentState?.openEndDrawer();
 
@@ -95,7 +95,7 @@ class _NativeAppShellState extends State<NativeAppShell> {
       key: _scaffoldKey,
       backgroundColor: _page,
       endDrawer: Drawer(
-        backgroundColor: const Color(0xFF123840),
+        backgroundColor: MsdTokens.deep,
         child: SafeArea(
           child: Column(
             children: [
@@ -125,11 +125,11 @@ class _NativeAppShellState extends State<NativeAppShell> {
                         children: [
                           Text(
                             'إدارة الخدمات الطبية',
-                            style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14, color: const Color(0xFFF2F9F6)),
+                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: MsdTokens.onDeep),
                           ),
                           Text(
                             name.isEmpty ? 'COMMAND' : name,
-                            style: GoogleFonts.tajawal(fontSize: 11.5, fontWeight: FontWeight.w600, color: const Color(0xFF9FD8CF)),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.mintWash),
                           ),
                         ],
                       ),
@@ -137,7 +137,7 @@ class _NativeAppShellState extends State<NativeAppShell> {
                   ],
                 ),
               ),
-              const Divider(height: 1, color: Color(0x22FFFFFF)),
+              const Divider(height: 1, color: MsdTokens.whiteWash),
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -187,15 +187,15 @@ class _NativeAppShellState extends State<NativeAppShell> {
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(color: Color(0xFF2E9E6C), shape: BoxShape.circle),
+                        decoration: const BoxDecoration(color: MsdTokens.successFill, shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('النظام يعمل بشكل طبيعي', style: GoogleFonts.tajawal(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFF2F9F6))),
-                            Text('SYNC · منذ دقيقة', style: GoogleFonts.tajawal(fontSize: 11, color: const Color(0xFF9FD8CF))),
+                            Text('النظام يعمل بشكل طبيعي', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: MsdTokens.onDeep)),
+                            Text('SYNC · منذ دقيقة', style: TextStyle(fontSize: 12, color: MsdTokens.mintWash)),
                           ],
                         ),
                       ),
@@ -210,13 +210,13 @@ class _NativeAppShellState extends State<NativeAppShell> {
                   child: OutlinedButton(
                     onPressed: widget.onLogout,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFF2F9F6),
-                      side: const BorderSide(color: Color(0x59BFE6E2)),
+                      foregroundColor: MsdTokens.onDeep,
+                      side: const BorderSide(color: MsdTokens.mintLine),
                       backgroundColor: _deep.withValues(alpha: 0.55),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: const StadiumBorder(),
                     ),
-                    child: Text('تسجيل الخروج', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 14)),
+                    child: Text('تسجيل الخروج', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
                   ),
                 ),
               ),
@@ -228,13 +228,13 @@ class _NativeAppShellState extends State<NativeAppShell> {
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           backgroundColor: Colors.white,
-          indicatorColor: const Color(0x1F0F8F86),
+          indicatorColor: MsdTokens.cyanWash,
           elevation: 0,
           height: 68,
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             final selected = states.contains(WidgetState.selected);
-            return GoogleFonts.tajawal(
-              fontSize: 11.5,
+            return TextStyle(
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
               color: selected ? _teal : _faint,
             );
@@ -247,7 +247,7 @@ class _NativeAppShellState extends State<NativeAppShell> {
         child: Container(
           decoration: const BoxDecoration(
             color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0x1A1A6B8A))),
+            border: Border(top: BorderSide(color: MsdTokens.tealWash)),
           ),
           child: NavigationBar(
             selectedIndex: _index,
@@ -268,7 +268,7 @@ class _NativeAppShellState extends State<NativeAppShell> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Material(
-        color: selected ? const Color(0x3857C9B3) : Colors.transparent,
+        color: selected ? MsdTokens.mintLine : Colors.transparent,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           onTap: onTap,
@@ -277,7 +277,7 @@ class _NativeAppShellState extends State<NativeAppShell> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: selected ? const Color(0x5957C9B3) : Colors.transparent),
+              border: Border.all(color: selected ? MsdTokens.mintLine : Colors.transparent),
             ),
             child: Row(
               children: [
@@ -285,19 +285,19 @@ class _NativeAppShellState extends State<NativeAppShell> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: selected ? const Color(0x3357C9B3) : Colors.white.withValues(alpha: 0.06),
+                    color: selected ? MsdTokens.mintLine : Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: CmdIcon(icon, size: 18, color: selected ? const Color(0xFF5EE0C4) : const Color(0xFF7FB3AB)),
+                  child: CmdIcon(icon, size: 18, color: selected ? MsdTokens.sky : MsdTokens.mintWash),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   label,
-                  style: GoogleFonts.tajawal(
+                  style: TextStyle(
                     fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
                     fontSize: 14,
-                    color: selected ? const Color(0xFFF2F9F6) : const Color(0xFFA9CFC7),
+                    color: selected ? MsdTokens.onDeep : MsdTokens.mist,
                   ),
                 ),
               ],

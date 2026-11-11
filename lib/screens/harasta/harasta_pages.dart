@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../api_client.dart';
 import '../../data/harasta_catalog.dart';
@@ -174,9 +173,9 @@ class HarastaStaffPage extends StatelessWidget {
         HpPanel(
           child: Row(
             children: [
-              Text('إجمالي مذكور', style: GoogleFonts.tajawal(fontWeight: FontWeight.w700, color: Hp.sub)),
+              Text('إجمالي مذكور', style: TextStyle(fontWeight: FontWeight.w700, color: Hp.sub)),
               const Spacer(),
-              Text('$total', style: GoogleFonts.tajawal(fontSize: 28, fontWeight: FontWeight.w900, color: Hp.data)),
+              Text('$total', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Hp.data)),
             ],
           ),
         ),
@@ -219,7 +218,7 @@ class HarastaVisionPage extends StatelessWidget {
               children: [
                 Text(
                   '${v.$1} · ${v.$2}',
-                  style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 15.5, color: Hp.data),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5, color: Hp.data),
                 ),
                 const SizedBox(height: 10),
                 for (final line in v.$3)
@@ -236,7 +235,7 @@ class HarastaVisionPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(line, style: GoogleFonts.tajawal(fontSize: 13.5, height: 1.45, color: Hp.ink, fontWeight: FontWeight.w600)),
+                          child: Text(line, style: TextStyle(fontSize: 13.5, height: 1.45, color: Hp.ink, fontWeight: FontWeight.w600)),
                         ),
                       ],
                     ),
@@ -391,12 +390,12 @@ class _HarastaFilesPageState extends State<HarastaFilesPage> {
                 children: [
                   Icon(Icons.folder_off_outlined, size: 36, color: Hp.faint.withValues(alpha: 0.85)),
                   const SizedBox(height: 10),
-                  Text('لا نتائج مطابقة', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink)),
+                  Text('لا نتائج مطابقة', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Hp.ink)),
                   const SizedBox(height: 4),
                   Text(
                     'عدِّل البحث أو الفلتر، أو اسحب للتحديث.',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.tajawal(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 12.5, color: Hp.sub, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -405,7 +404,7 @@ class _HarastaFilesPageState extends State<HarastaFilesPage> {
         else ...[
           Text(
             'السجل · ${items.length}',
-            style: GoogleFonts.tajawal(fontSize: 12.5, fontWeight: FontWeight.w800, color: Hp.faint),
+            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Hp.faint),
           ),
           for (final raw in items)
             HpFileCard(
@@ -574,7 +573,7 @@ class _HarastaStoresPageState extends State<HarastaStoresPage> {
                   '${i['storeName'] ?? ''} · ${i['quantity'] ?? 0} ${i['unit'] ?? ''}'
                   '${i['expiryDate'] != null ? ' · ينتهي ${i['expiryDate']}' : ''}',
               trailing: i['low'] == true
-                  ? Text('منخفض', style: GoogleFonts.tajawal(color: Hp.amber, fontWeight: FontWeight.w800, fontSize: 12))
+                  ? Text('منخفض', style: TextStyle(color: Hp.amber, fontWeight: FontWeight.w800, fontSize: 12))
                   : null,
             ),
       ],
@@ -662,7 +661,7 @@ class _HarastaAssetsPageState extends State<HarastaAssetsPage> {
               if (_loading)
                 const Padding(padding: EdgeInsets.all(20), child: Center(child: CircularProgressIndicator(color: Hp.data)))
               else if (_rows.isEmpty)
-                Text('لا توجد أصول مسجّلة', style: GoogleFonts.tajawal(color: Hp.sub))
+                Text('لا توجد أصول مسجّلة', style: TextStyle(color: Hp.sub))
               else
                 for (final a in _rows)
                   HpUnitRow(
@@ -772,8 +771,8 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
       backgroundColor: Hp.page,
       appBar: AppBar(
         backgroundColor: Hp.appBar,
-        foregroundColor: const Color(0xFFF2F9F6),
-        title: Text('مكتب الأصول', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, color: const Color(0xFFF2F9F6))),
+        foregroundColor: MsdTokens.onDeep,
+        title: Text('مكتب الأصول', style: TextStyle(fontWeight: FontWeight.w800, color: MsdTokens.onDeep)),
         actions: [
           if (widget.onLogout != null)
             IconButton(
@@ -798,7 +797,7 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
                 if (_loading)
                   const Padding(padding: EdgeInsets.all(20), child: Center(child: CircularProgressIndicator(color: Hp.data)))
                 else if (_rows.isEmpty)
-                  Text('لا توجد أصول — أضف جهازاً أدناه', style: GoogleFonts.tajawal(color: Hp.sub))
+                  Text('لا توجد أصول — أضف جهازاً أدناه', style: TextStyle(color: Hp.sub))
                 else
                   for (final a in _rows)
                     HpListTile(
@@ -808,7 +807,7 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
                         onPressed: () => _cycle(a),
                         child: Text(
                           '${a['statusAr'] ?? a['status'] ?? ''}',
-                          style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, color: Hp.data),
+                          style: TextStyle(fontWeight: FontWeight.w800, color: Hp.data),
                         ),
                       ),
                     ),
@@ -825,7 +824,7 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
                 MsdTextField(controller: _name, labelText: 'الاسم'),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _dept,
+                  initialValue: _dept,
                   decoration: const InputDecoration(labelText: 'القسم', border: OutlineInputBorder()),
                   items: [for (final d in _depts) DropdownMenuItem(value: d, child: Text(d))],
                   onChanged: (v) => setState(() => _dept = v ?? _depts.first),
@@ -838,7 +837,7 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
                 FilledButton(
                   onPressed: _saving ? null : _add,
                   style: FilledButton.styleFrom(backgroundColor: Hp.data, foregroundColor: Colors.white),
-                  child: Text(_saving ? 'جاري الحفظ...' : 'حفظ الأصل', style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+                  child: Text(_saving ? 'جاري الحفظ...' : 'حفظ الأصل', style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
               ],
             ),
@@ -898,12 +897,12 @@ class _HarastaCallDisplayPageState extends State<HarastaCallDisplayPage> {
                   Expanded(
                     child: Text(
                       '${r['clinic'] ?? ''}',
-                      style: GoogleFonts.tajawal(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18),
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18),
                     ),
                   ),
                   Text(
                     '${r['waiting'] ?? 0}',
-                    style: GoogleFonts.tajawal(color: MsdColors.sky, fontWeight: FontWeight.w800, fontSize: 28),
+                    style: TextStyle(color: MsdColors.sky, fontWeight: FontWeight.w800, fontSize: 28),
                   ),
                 ],
               ),
@@ -970,10 +969,10 @@ class _MiniStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
-          Text(value, style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w800, color: MsdColors.teal)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
+          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: MsdColors.teal)),
           if (detail != null && detail!.isNotEmpty)
-            Text(detail!, style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.faint)),
+            Text(detail!, style: TextStyle(fontSize: 12, color: MsdColors.faint)),
         ],
       ),
     );

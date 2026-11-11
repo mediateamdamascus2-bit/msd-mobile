@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../theme/app_theme.dart';
@@ -66,7 +65,7 @@ class HasiaHubScreen extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
-                  colors: [Color(0xFF1A6B8A), Color(0xFF145A75), Color(0xFF0F4A62)],
+                  colors: [MsdTokens.teal, MsdTokens.teal, MsdTokens.deep],
                 ),
               ),
               child: Row(
@@ -79,15 +78,15 @@ class HasiaHubScreen extends StatelessWidget {
                       children: [
                         Text(
                           'سجن حسيا',
-                          style: GoogleFonts.tajawal(
-                            color: const Color(0xFFB8E0F0),
+                          style: TextStyle(
+                            color: MsdTokens.onDeep,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           'الخدمات الطبية',
-                          style: GoogleFonts.tajawal(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.w800,
@@ -95,13 +94,14 @@ class HasiaHubScreen extends StatelessWidget {
                         ),
                         Text(
                           name,
-                          style: GoogleFonts.tajawal(color: const Color(0xFFD5EEF7), fontSize: 13),
+                          style: TextStyle(color: MsdTokens.onDeep, fontSize: 13),
                         ),
                       ],
                     ),
                   ),
                   if (Navigator.of(context).canPop())
                     IconButton(
+                      tooltip: 'رجوع',
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.arrow_forward, color: Colors.white),
                     )

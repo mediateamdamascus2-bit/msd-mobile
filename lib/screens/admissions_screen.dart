@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api_client.dart';
+import '../theme/tokens.dart';
 
 class AdmissionsScreen extends StatefulWidget {
   const AdmissionsScreen({
@@ -117,7 +118,7 @@ class _AdmissionsScreenState extends State<AdmissionsScreen> {
                 ],
                 if (_ok != null) ...[
                   const SizedBox(height: 12),
-                  Text(_ok!, style: const TextStyle(color: Color(0xFF2E9E6C))),
+                  Text(_ok!, style: const TextStyle(color: MsdTokens.successFill)),
                 ],
                 const SizedBox(height: 16),
                 TextField(

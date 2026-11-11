@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../api_client.dart';
 import '../services/new_item_watcher.dart';
@@ -513,7 +512,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF1A6B8A), Color(0xFF145A75), Color(0xFF0F4A62)],
+          colors: [MsdTokens.teal, MsdTokens.teal, MsdTokens.deep],
         ),
       ),
       child: Row(
@@ -525,8 +524,8 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
               children: [
                 Text(
                   'محطة مستقلة · مشفى الشرطة في حرستا',
-                  style: GoogleFonts.tajawal(
-                    color: const Color(0xFFB8E0F0),
+                  style: TextStyle(
+                    color: MsdTokens.onDeep,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -534,7 +533,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'الاستقبال',
-                  style: GoogleFonts.tajawal(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -544,8 +543,8 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'تسجيل الوصول · فتح الإضبارة · توجيه العيادة',
-                  style: GoogleFonts.tajawal(
-                    color: const Color(0xFFD5EEF7),
+                  style: TextStyle(
+                    color: MsdTokens.onDeep,
                     fontSize: 13,
                   ),
                 ),
@@ -584,18 +583,18 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 12, 10, 12),
       decoration: BoxDecoration(
-        color: accent ? const Color(0x337EC8E3) : Colors.white.withValues(alpha: 0.95),
+        color: accent ? MsdTokens.surface : Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x384BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.sub, fontWeight: FontWeight.w600)),
+          Text(label, style: TextStyle(fontSize: 12, color: MsdColors.sub, fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.tajawal(
+            style: TextStyle(
               fontSize: soft ? 13 : 22,
               fontWeight: FontWeight.w800,
               color: MsdColors.teal,
@@ -611,13 +610,13 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: error ? const Color(0x1AB42318) : const Color(0x1A2E9E6C),
+        color: error ? MsdTokens.dangerWash : MsdTokens.successWash,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: error ? const Color(0x40B42318) : const Color(0x402E9E6C)),
+        border: Border.all(color: error ? MsdTokens.dangerWash : MsdTokens.successWash),
       ),
       child: Text(
         text,
-        style: GoogleFonts.tajawal(
+        style: TextStyle(
           color: error ? MsdColors.danger : MsdColors.green,
           fontWeight: FontWeight.w600,
         ),
@@ -632,9 +631,9 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
         boxShadow: const [
-          BoxShadow(color: Color(0x141A6B8A), blurRadius: 18, offset: Offset(0, 8)),
+          BoxShadow(color: MsdTokens.tealWash, blurRadius: 18, offset: Offset(0, 8)),
         ],
       ),
       child: child,
@@ -652,12 +651,12 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('حجوزات الإدارات', style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
-                    Text('وصول المراجعين المحجوزين', style: GoogleFonts.tajawal(fontSize: 17, fontWeight: FontWeight.w800, color: MsdColors.ink)),
+                    Text('حجوزات الإدارات', style: TextStyle(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
+                    Text('وصول المراجعين المحجوزين', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MsdColors.ink)),
                   ],
                 ),
               ),
-              Text('${_bookings.length}', style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
+              Text('${_bookings.length}', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
             ],
           ),
           const SizedBox(height: 10),
@@ -697,10 +696,10 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFFAFDFE), Color(0x73EAF6FB)],
+          colors: [MsdTokens.paper, MsdTokens.pageWash],
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x334BA3C7)),
+        border: Border.all(color: MsdTokens.cyanLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -709,20 +708,20 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
             children: [
               Text(
                 '${b['code']}',
-                style: GoogleFonts.tajawal(fontSize: 18, fontWeight: FontWeight.w800, color: MsdColors.teal),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: MsdColors.teal),
               ),
               const SizedBox(width: 8),
-              Text('$date · ${b['slot']}', style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.faint)),
+              Text('$date · ${b['slot']}', style: TextStyle(fontSize: 12, color: MsdColors.faint)),
             ],
           ),
-          Text('${b['patientName']}', style: GoogleFonts.tajawal(fontWeight: FontWeight.w700, fontSize: 15)),
+          Text('${b['patientName']}', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
           Text(
             'عيادة ${b['clinic']} · $side',
-            style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub),
+            style: TextStyle(fontSize: 12, color: MsdColors.sub),
           ),
           Text(
             '${b['nationalId'] ?? 'بدون هوية'}',
-            style: GoogleFonts.ibmPlexMono(fontSize: 11, color: MsdColors.faint),
+            style: TextStyle(fontSize: 12, color: MsdColors.faint),
           ),
           const SizedBox(height: 8),
           if (isToday)
@@ -748,10 +747,10 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0x1F4BA3C7),
+                  color: MsdTokens.cyanWash,
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text('موعد لاحق', style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
+                child: Text('موعد لاحق', style: TextStyle(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
               ),
             ),
         ],
@@ -764,11 +763,11 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('استمارة جديدة', style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
-          Text('فتح استمارة عيادة', style: GoogleFonts.tajawal(fontSize: 20, fontWeight: FontWeight.w800)),
+          Text('استمارة جديدة', style: TextStyle(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
+          Text('فتح استمارة عيادة', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           Text(
             'تسجيل مراجع جديد — يُحفظ مباشرة في قاعدة البيانات.',
-            style: GoogleFonts.tajawal(color: MsdColors.sub, fontSize: 13),
+            style: TextStyle(color: MsdColors.sub, fontSize: 13),
           ),
           const SizedBox(height: 14),
           Row(
@@ -811,7 +810,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                         label: Text(s),
                         selected: _special == s,
                         selectedColor: MsdColors.amber,
-                        labelStyle: GoogleFonts.tajawal(
+                        labelStyle: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: _special == s ? Colors.white : MsdColors.sub,
                         ),
@@ -970,13 +969,13 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: active
-                ? (danger ? const Color(0x1ACF5A52) : const Color(0x334BA3C7))
+                ? (danger ? MsdTokens.dangerWash : MsdTokens.cyanLine)
                 : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: active
-                  ? (danger ? const Color(0xFFCF5A52) : MsdColors.cyan)
-                  : const Color(0x334BA3C7),
+                  ? (danger ? MsdTokens.danger : MsdColors.cyan)
+                  : MsdTokens.cyanLine,
               width: active ? 1.7 : 1,
             ),
             boxShadow: active
@@ -992,9 +991,9 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800, color: MsdColors.ink, fontSize: 15)),
+              Text(title, style: TextStyle(fontWeight: FontWeight.w800, color: MsdColors.ink, fontSize: 15)),
               const SizedBox(height: 2),
-              Text(sub, style: GoogleFonts.tajawal(fontSize: 11, color: MsdColors.sub, height: 1.3)),
+              Text(sub, style: TextStyle(fontSize: 12, color: MsdColors.sub, height: 1.3)),
             ],
           ),
         ),
@@ -1013,12 +1012,12 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('طابور التوجيه', style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
-                    Text('بانتظار التوجيه إلى العيادة', style: GoogleFonts.tajawal(fontSize: 17, fontWeight: FontWeight.w800)),
+                    Text('طابور التوجيه', style: TextStyle(fontSize: 12, color: MsdColors.teal, fontWeight: FontWeight.w700)),
+                    Text('بانتظار التوجيه إلى العيادة', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                   ],
                 ),
               ),
-              Text('${_queue.length}', style: GoogleFonts.tajawal(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
+              Text('${_queue.length}', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MsdColors.teal)),
             ],
           ),
           const SizedBox(height: 10),
@@ -1048,18 +1047,18 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
           colors: dirty
-              ? const [Color(0xFFFBF6EC), Color(0xFFFFFCF7)]
+              ? const [MsdTokens.amberSoft, MsdTokens.paper]
               : open
-                  ? const [Color(0xFFEAF6FB), Color(0xFFF8FCFE)]
-                  : const [Color(0xFFF8FCFE), Color(0xFFFFFFFF)],
+                  ? const [MsdTokens.page, MsdTokens.paper]
+                  : const [MsdTokens.paper, MsdTokens.white],
         ),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: dirty
-              ? const Color(0x99C0913A)
+              ? MsdTokens.amberWash
               : open
-                  ? const Color(0x994BA3C7)
-                  : const Color(0x334BA3C7),
+                  ? MsdTokens.cyanLine
+                  : MsdTokens.cyanLine,
           width: open ? 1.7 : 1,
         ),
         boxShadow: [
@@ -1089,14 +1088,14 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                         borderRadius: BorderRadius.circular(14),
                         gradient: LinearGradient(
                           colors: dirty
-                              ? const [Color(0xFFD4A84B), Color(0xFFC0913A)]
-                              : const [Color(0xFF7EC8E3), Color(0xFF1A6B8A)],
+                              ? const [MsdTokens.amberFill, MsdTokens.amberFill]
+                              : const [MsdTokens.sky, MsdTokens.teal],
                         ),
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         (name?.toString().isNotEmpty == true) ? name.toString().characters.first : '؟',
-                        style: GoogleFonts.tajawal(
+                        style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
@@ -1110,7 +1109,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                         children: [
                           Text(
                             name?.toString() ?? '',
-                            style: GoogleFonts.tajawal(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 17,
                               color: MsdColors.ink,
@@ -1120,7 +1119,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                           const SizedBox(height: 4),
                           Text(
                             meta,
-                            style: GoogleFonts.ibmPlexMono(fontSize: 11, color: MsdColors.sub, height: 1.35),
+                            style: TextStyle(fontSize: 12, color: MsdColors.sub, height: 1.35),
                           ),
                           const SizedBox(height: 8),
                           MsdPill(
@@ -1156,7 +1155,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
         color: Colors.white.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: _isDirty ? const Color(0x66C0913A) : const Color(0x334BA3C7),
+          color: _isDirty ? MsdTokens.amberWash : MsdTokens.cyanLine,
         ),
       ),
       child: Column(
@@ -1170,7 +1169,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                   children: [
                     Text(
                       'إضبارة ${item['caseNumber']}',
-                      style: GoogleFonts.tajawal(
+                      style: TextStyle(
                         fontSize: 15,
                         color: MsdColors.teal,
                         fontWeight: FontWeight.w800,
@@ -1179,7 +1178,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                     const SizedBox(height: 2),
                     Text(
                       '${item['entryType']} · $_editCategory · ${item['statusAr'] ?? ''}',
-                      style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub),
+                      style: TextStyle(fontSize: 12, color: MsdColors.sub),
                     ),
                   ],
                 ),
@@ -1188,7 +1187,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                 onPressed: _tryClose,
                 style: TextButton.styleFrom(
                   foregroundColor: MsdColors.sub,
-                  backgroundColor: const Color(0x147EC8E3),
+                  backgroundColor: MsdTokens.surface,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 icon: const Icon(Icons.close_rounded, size: 18),
@@ -1214,7 +1213,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
                         label: Text(s),
                         selected: _editSpecial == s,
                         selectedColor: MsdColors.amber,
-                        labelStyle: GoogleFonts.tajawal(
+                        labelStyle: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: _editSpecial == s ? Colors.white : MsdColors.sub,
                         ),
@@ -1375,15 +1374,15 @@ class _ReceptionScreenState extends State<ReceptionScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0x55EAF6FB),
+        color: MsdTokens.pageWash,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0x594BA3C7), style: BorderStyle.solid),
+        border: Border.all(color: MsdTokens.cyanLine, style: BorderStyle.solid),
       ),
       child: Column(
         children: [
-          Text(title, style: GoogleFonts.tajawal(fontWeight: FontWeight.w800)),
+          Text(title, style: TextStyle(fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          Text(sub, textAlign: TextAlign.center, style: GoogleFonts.tajawal(fontSize: 12, color: MsdColors.sub)),
+          Text(sub, textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: MsdColors.sub)),
         ],
       ),
     );

@@ -169,7 +169,7 @@ class _NeedsScreenState extends State<NeedsScreen> {
             },
             icon: Icon(_openOnly ? Icons.filter_alt : Icons.filter_alt_off),
           ),
-          IconButton(onPressed: _bootstrap, icon: const Icon(Icons.refresh)),
+          IconButton(tooltip: 'تحديث', onPressed: _bootstrap, icon: const Icon(Icons.refresh)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
