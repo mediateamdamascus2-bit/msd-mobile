@@ -30,10 +30,10 @@ class OpsTrainingScreen extends StatelessWidget {
           openDetail: false,
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي البرامج', list.isEmpty ? kNoData : '${list.length}', 'cap', OpsColors.cyan),
-            OpsKpi('الدورات النشطة', list.isEmpty ? kNoData : '$active', 'pulse', OpsColors.blue),
-            OpsKpi('إجمالي المتدربين', list.isEmpty ? kNoData : '$enrolled', 'user', OpsColors.teal),
-            OpsKpi('الشهادات الممنوحة', list.isEmpty ? kNoData : '$certified', 'check', OpsColors.green),
+            OpsKpi('إجمالي البرامج', list.isEmpty ? kNoData : fmtInt(list.length), 'cap', OpsColors.cyan),
+            OpsKpi('الدورات النشطة', list.isEmpty ? kNoData : fmtInt(active), 'pulse', OpsColors.blue),
+            OpsKpi('إجمالي المتدربين', list.isEmpty ? kNoData : fmtInt(enrolled), 'user', OpsColors.teal),
+            OpsKpi('الشهادات الممنوحة', list.isEmpty ? kNoData : fmtInt(certified), 'check', OpsColors.green),
           ],
           items: [
             for (final e in list)
@@ -46,7 +46,7 @@ class OpsTrainingScreen extends StatelessWidget {
                 group: e['category']?.toString(),
                 filterValue: e['status']?.toString(),
                 pills: [OpsPill(e['status']?.toString() ?? '—', OpsColors.cyan)],
-                metricValue: e['enrolled']?.toString(),
+                metricValue: e['enrolled'] is num ? fmtInt((e['enrolled'] as num).round()) : e['enrolled']?.toString(),
                 metricLabel: 'متدرب',
               ),
           ],

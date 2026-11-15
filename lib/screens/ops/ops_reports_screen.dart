@@ -59,7 +59,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
 
   String _minutes(double? m) {
     if (m == null) return kNoData;
-    if (m < 60) return '${m.round()} د';
+    if (m < 60) return '${fmtInt(m.round())} د';
     return '${(m / 60).toStringAsFixed(1)} س';
   }
 
@@ -110,7 +110,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
             OpsKpiRow(
               kpis: [
                 OpsKpi('أحداث الفترة', has ? fmtInt(events.length) : kNoData, 'pulse', OpsColors.cyan),
-                OpsKpi('نسبة الإغلاق', has && events.isNotEmpty ? '${(closed * 100 / events.length).round()}٪' : kNoData,
+                OpsKpi('نسبة الإغلاق', has && events.isNotEmpty ? '${fmtInt((closed * 100 / events.length).round())}٪' : kNoData,
                     'check', OpsColors.green),
                 OpsKpi('متوسط زمن الإغلاق', _minutes(_responseMinutes(events)), 'clock', OpsColors.blue),
                 const OpsKpi('إحالات للمشافي', kNoData, 'hospital', OpsColors.teal),

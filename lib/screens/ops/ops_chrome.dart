@@ -154,6 +154,8 @@ class OpsScaffold extends StatelessWidget {
     required this.children,
     this.controller,
     this.onRefresh,
+    this.implyLeading = true,
+    this.floating,
   });
 
   final String title;
@@ -161,12 +163,16 @@ class OpsScaffold extends StatelessWidget {
   final List<Widget> children;
   final ScrollController? controller;
   final Future<void> Function()? onRefresh;
+  final bool implyLeading;
+  final Widget? floating;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: OpsColors.page,
+      floatingActionButton: floating,
       appBar: AppBar(
+        automaticallyImplyLeading: implyLeading,
         backgroundColor: OpsColors.page,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -187,7 +193,7 @@ class OpsScaffold extends StatelessWidget {
           ListView(
             controller: controller,
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
+            padding: EdgeInsets.fromLTRB(14, 4, 14, floating == null ? 28 : 88),
             children: children,
           ),
         ),
@@ -786,6 +792,8 @@ class OpsMonitorScreen extends StatefulWidget {
     this.openDetail = true,
     this.onRefresh,
     this.emptyMessage = 'لا توجد بيانات لعرضها',
+    this.implyLeading = true,
+    this.floating,
   });
 
   final Future<void> Function()? onRefresh;
@@ -802,6 +810,8 @@ class OpsMonitorScreen extends StatefulWidget {
   final List<Widget> extras;
   /// When false, list is monitor-only (no case detail sheet).
   final bool openDetail;
+  final bool implyLeading;
+  final Widget? floating;
 
   @override
   State<OpsMonitorScreen> createState() => _OpsMonitorScreenState();
@@ -830,6 +840,8 @@ class _OpsMonitorScreenState extends State<OpsMonitorScreen> {
       title: widget.title,
       eyebrow: widget.eyebrow,
       onRefresh: widget.onRefresh,
+      implyLeading: widget.implyLeading,
+      floating: widget.floating,
       children: [
         OpsKpiRow(kpis: widget.kpis),
         const SizedBox(height: 12),
@@ -888,6 +900,7 @@ class _OpsMonitorScreenState extends State<OpsMonitorScreen> {
             onTap: widget.openDetail
                 ? () => showOpsDetail(context, item, kindLabel: widget.kindLabel)
                 : null,
+            showAction: !widget.openDetail,
           ),
           const SizedBox(height: 10),
         ],
@@ -901,9 +914,10 @@ class _OpsMonitorScreenState extends State<OpsMonitorScreen> {
 }
 
 class _OpsItemCard extends StatelessWidget {
-  const _OpsItemCard({required this.item, this.onTap});
+  const _OpsItemCard({required this.item, this.onTap, this.showAction = false});
   final OpsItem item;
   final VoidCallback? onTap;
+  final bool showAction;
 
   @override
   Widget build(BuildContext context) {
@@ -971,6 +985,16 @@ class _OpsItemCard extends StatelessWidget {
               spacing: 6,
               runSpacing: 6,
               children: [for (final p in item.pills) OpsPillTag(p.label, p.color)],
+            ),
+          ],
+          if (showAction && item.actionLabel != null && item.onAction != null) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                onPressed: item.onAction,
+                child: Text(item.actionLabel!, style: opsText(13, w: FontWeight.w800, color: OpsColors.teal)),
+              ),
             ),
           ],
         ],

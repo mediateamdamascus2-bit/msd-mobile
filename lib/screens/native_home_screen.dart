@@ -7,16 +7,9 @@ import '../data/command_data.dart';
 import '../services/new_item_watcher.dart';
 import '../services/notification_service.dart';
 import '../theme/cmd_icon.dart';
-import 'facility_screen.dart';
-import 'harasta_hub_screen.dart';
-import 'hasia_hub_screen.dart';
-import 'ops/ops_centers_screen.dart';
-import 'ops/ops_events_screen.dart';
-import 'ops/ops_fleet_screen.dart';
-import 'ops/ops_training_screen.dart';
-import 'ops/ops_units_screen.dart';
-import 'ops/ops_warehouses_screen.dart';
 import '../theme/tokens.dart';
+import '../ui/msd_components.dart';
+import 'ops/ops_live.dart';
 
 /// Mobile central command — mirrors web لوحة القيادة المركزية (no facility board / stations strip).
 class NativeHomeScreen extends StatefulWidget {
@@ -26,30 +19,25 @@ class NativeHomeScreen extends StatefulWidget {
     required this.user,
     required this.onLogout,
     this.onOpenMenu,
+    this.onOpenSection,
+    this.onBoardTime,
+    this.active = true,
   });
 
   final ApiClient api;
   final Map<String, dynamic> user;
   final Future<void> Function() onLogout;
   final VoidCallback? onOpenMenu;
+  final void Function(String section)? onOpenSection;
+  final ValueChanged<DateTime>? onBoardTime;
+  final bool active;
 
   @override
   State<NativeHomeScreen> createState() => _NativeHomeScreenState();
 }
 
-class _NativeHomeScreenState extends State<NativeHomeScreen> {
-  static const _ink = MsdTokens.ink;
-  static const _sub = MsdTokens.sub;
-  static const _faint = MsdTokens.faint;
-  static const _line = MsdTokens.line;
-  static const _page = MsdTokens.page;
-  static const _cyan = MsdTokens.cyan;
-  static const _teal = MsdTokens.teal;
-  static const _blue = MsdTokens.blue;
-  static const _green = MsdTokens.successFill;
-  static const _amber = MsdTokens.amberFill;
-  static const _red = MsdTokens.danger;
-  static const _noData = 'لا توجد بيانات';
+class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBindingObserver {
+  static const _missing = '—';
 
   CommandData? _data = CommandRepository.cached;
   String? _error;
@@ -59,16 +47,45 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final d = _data;
-    if (d != null) _newEvents.absorb(d.allEvents);
+    if (d != null) {
+      _newEvents.absorb(d.allEvents);
+      widget.onBoardTime?.call(d.fetchedAt);
+    }
     _load();
-    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _load());
+    _armTimer();
+  }
+
+  @override
+  void didUpdateWidget(covariant NativeHomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.active && !oldWidget.active) _load();
+    _armTimer();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && widget.active) _load();
+    _armTimer();
+  }
+
+  void _armTimer() {
+    final life = WidgetsBinding.instance.lifecycleState;
+    final foreground = life == null || life == AppLifecycleState.resumed;
+    if (widget.active && foreground) {
+      _timer ??= Timer.periodic(const Duration(seconds: 30), (_) => _load());
+    } else {
+      _timer?.cancel();
+      _timer = null;
+    }
   }
 
   Future<void> _load() async {
@@ -80,6 +97,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
         _data = d;
         _error = null;
       });
+      widget.onBoardTime?.call(d.fetchedAt);
       if (fresh.isNotEmpty) {
         unawaited(NotificationService.instance.newEvents(
           [for (final e in fresh) '${e['title'] ?? 'حدث'} — ${d.nameOf(e['facilityId']?.toString())}'],
@@ -91,21 +109,11 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     }
   }
 
-  String _n(int? v) => v == null ? _noData : _fmt(v);
+  String _n(int? v) => v == null ? _missing : fmtInt(v);
 
   String _stat(String section, String label, String fallback) {
     final n = _data?.summaryValue(section, label);
-    return n == null ? fallback : _fmt(n);
-  }
-
-  static String _fmt(int n) {
-    final s = n.toString();
-    final b = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) b.write('٬');
-      b.write(s[i]);
-    }
-    return b.toString();
+    return n == null ? fallback : fmtInt(n);
   }
 
   int? _sum(List<JsonRow> facilities, Map<String, List<JsonRow>?> source, {bool Function(JsonRow)? where}) {
@@ -120,33 +128,44 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     return any ? n : null;
   }
 
+  void _open(String section) => widget.onOpenSection?.call(section);
+
   @override
   Widget build(BuildContext context) {
     final name = widget.user['displayNameAr']?.toString() ??
         widget.user['username']?.toString() ??
         '';
+    final loading = _data == null && _error == null;
+    final failedEmpty = _data == null && _error != null;
 
     return Scaffold(
-      backgroundColor: _page,
+      backgroundColor: MsdTokens.page,
       body: RefreshIndicator(
-        color: _cyan,
+        color: MsdTokens.cyan,
         onRefresh: _load,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(child: _commandHeader(name)),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 14, 28),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _featuredEvents(),
-                  const SizedBox(height: 12),
-                  ..._domainCards(),
-                  const SizedBox(height: 12),
-                  _trainingCard(),
-                ]),
+            if (loading)
+              const SliverToBoxAdapter(child: MsdLoading(rows: 4))
+            else if (failedEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: MsdErrorState(message: 'تعذّر التحديث — اسحب للتحديث', onRetry: _load),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 28),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _featuredEvents(),
+                    const SizedBox(height: 12),
+                    ..._domainCards(),
+                    _trainingCard(),
+                  ]),
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -155,6 +174,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
 
   Widget _commandHeader(String name) {
     final role = name.isEmpty ? 'COMMAND' : name;
+    final stamp = _stamp;
     return SafeArea(
       bottom: false,
       child: Padding(
@@ -189,17 +209,17 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                       label: 'القائمة',
                       button: true,
                       child: Tooltip(
-                      message: 'القائمة',
-                      child: InkWell(
-                        onTap: widget.onOpenMenu,
-                        borderRadius: BorderRadius.circular(12),
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Icon(Icons.menu_rounded, color: MsdTokens.mintWash, size: 22),
+                        message: 'القائمة',
+                        child: InkWell(
+                          onTap: widget.onOpenMenu,
+                          borderRadius: BorderRadius.circular(12),
+                          child: const SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Icon(Icons.menu_rounded, color: MsdTokens.mintWash, size: 22),
+                          ),
                         ),
                       ),
-                    ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -207,15 +227,15 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'لوحة القيادة المركزية',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
-                            fontSize: 16.5,
+                            fontSize: 16,
                             height: 1.15,
-                            color: _ink,
+                            color: MsdTokens.ink,
                             letterSpacing: -0.2,
                           ),
                         ),
@@ -225,18 +245,18 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: _cyan.withValues(alpha: 0.1),
+                              color: MsdTokens.cyan.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(999),
-                              border: Border.all(color: _cyan.withValues(alpha: 0.22)),
+                              border: Border.all(color: MsdTokens.cyan.withValues(alpha: 0.22)),
                             ),
                             child: Text(
                               role,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: _teal,
+                                color: MsdTokens.teal,
                               ),
                             ),
                           ),
@@ -246,49 +266,29 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Container(height: 1, color: MsdTokens.lineSoft),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'رؤية شاملة وإحاطة دقيقة',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: _sub),
+              if (stamp != null) ...[
+                const SizedBox(height: 12),
+                Container(height: 1, color: MsdTokens.lineSoft),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: BoxDecoration(color: _stampColor, shape: BoxShape.circle),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: MsdTokens.paper,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: MsdTokens.lineSoft),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        stamp,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _stampColor),
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 7,
-                          height: 7,
-                          decoration: BoxDecoration(
-                            color: _stampColor,
-                            shape: BoxShape.circle,
-                            boxShadow: [BoxShadow(color: _stampColor.withValues(alpha: 0.35), blurRadius: 6)],
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _stamp,
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _sub),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -296,13 +296,14 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     );
   }
 
-  String get _stamp {
+  String? get _stamp {
     final d = _data;
-    if (d == null) return _error == null ? 'جارٍ التحميل…' : 'تعذر التحديث';
-    return _error == null ? 'تحديث ${hhmm(d.fetchedAt)}' : 'آخر تحديث ${hhmm(d.fetchedAt)}';
+    if (d == null) return null;
+    if (_error != null) return 'تعذّر التحديث — اسحب للتحديث';
+    return 'آخر تحديث ${hhmm(d.fetchedAt)}';
   }
 
-  Color get _stampColor => _error != null ? _red : (_data == null ? _amber : _green);
+  Color get _stampColor => _error != null ? MsdTokens.danger : MsdTokens.success;
 
   String _avgClose(List<JsonRow> events) {
     var n = 0;
@@ -314,13 +315,13 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
       n++;
       sum += b.difference(a).inMinutes;
     }
-    if (n == 0) return _noData;
+    if (n == 0) return _missing;
     final m = sum / n;
-    return m < 60 ? '${m.round()} د' : '${(m / 60).toStringAsFixed(1)} س';
+    return m < 60 ? '${fmtInt(m.round())} د' : '${(m / 60).toStringAsFixed(1)} س';
   }
 
   String _sumKey(List<JsonRow> rows, String key) {
-    if (rows.isEmpty) return _noData;
+    if (rows.isEmpty) return _missing;
     var any = false;
     var n = 0;
     for (final row in rows) {
@@ -329,11 +330,11 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
       any = true;
       n += value.round();
     }
-    return any ? '$n' : _noData;
+    return any ? fmtInt(n) : _missing;
   }
 
   String _availableBeds(List<JsonRow> rows) {
-    if (rows.isEmpty) return _noData;
+    if (rows.isEmpty) return _missing;
     var any = false;
     var n = 0;
     for (final row in rows) {
@@ -343,7 +344,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
       final used = row['bedsUsed'];
       n += total.round() - (used is num ? used.round() : 0);
     }
-    return any ? '$n' : _noData;
+    return any ? fmtInt(n) : _missing;
   }
 
   Widget _featuredEvents() {
@@ -352,56 +353,53 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     final all = d?.allEvents ?? const <JsonRow>[];
     final open = all.where(CommandData.isOpen).toList();
     int rank(int r) => open.where((e) => CommandData.severityRank(e) == r).length;
+    final transfers = d?.summaryValue('الأحداث الطبية', 'تحويلات');
     return _Shell(
-      tone: _cyan,
-      onTap: () => _openOps(OpsEventsScreen(api: widget.api)),
+      tone: MsdTokens.cyan,
+      onTap: () => _open('events'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHead(num: '01', title: 'الأحداث الطبية', tone: _cyan, icon: 'pulse'),
-          _primaryValue(_stat('الأحداث الطبية', 'إجمالي الأحداث', has ? _fmt(all.length) : _noData), 40),
-          Text('إجمالي الأحداث', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+          _cardHead(num: '01', title: 'الأحداث الطبية', tone: MsdTokens.cyan, icon: 'pulse'),
+          _primaryValue(_stat('الأحداث الطبية', 'إجمالي الأحداث', has ? fmtInt(all.length) : _missing), 40),
+          const Text('إجمالي الأحداث', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub)),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: _mini(_stat('الأحداث الطبية', 'نشطة الآن', has ? '${open.length}' : _noData), 'مفتوحة الآن', valueColor: _amber)),
-              const SizedBox(width: 8),
-              Expanded(child: _mini(_stat('الأحداث الطبية', 'تحويلات', _noData), 'تحويلات')),
-              const SizedBox(width: 8),
-              Expanded(child: _mini(has ? _avgClose(all) : _noData, 'متوسط زمن الإغلاق', valueColor: _green)),
-            ],
-          ),
+          _statLines([
+            (_stat('الأحداث الطبية', 'نشطة الآن', has ? fmtInt(open.length) : _missing), 'مفتوحة الآن', MsdTokens.amberFill),
+            if (transfers != null) (fmtInt(transfers), 'تحويلات', MsdTokens.ink),
+            (has ? _avgClose(all) : _missing, 'متوسط زمن الإغلاق', MsdTokens.success),
+          ]),
           const SizedBox(height: 14),
-          Text('المفتوحة حسب الخطورة', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _faint)),
+          const Text('المفتوحة حسب الخطورة', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: MsdTokens.faint)),
           const SizedBox(height: 8),
-          _sev('عاجل', has ? '${rank(0)}' : _noData, _red),
-          _sev('مرتفع / متوسط', has ? '${rank(1)}' : _noData, _amber),
-          _sev('منخفض / عادي', has ? '${rank(2)}' : _noData, _green),
+          _sev('عاجل', has ? fmtInt(rank(0)) : _missing, MsdTokens.danger),
+          _sev('مرتفع / متوسط', has ? fmtInt(rank(1)) : _missing, MsdTokens.amberFill),
+          _sev('منخفض / عادي', has ? fmtInt(rank(2)) : _missing, MsdTokens.success),
         ],
       ),
     );
   }
 
   Widget _primaryValue(String v, double size) {
-    if (v == _noData) {
-      return Text(_noData, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _faint, height: 1.3));
+    if (v == _missing) {
+      return const Text(_missing, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: MsdTokens.faint, height: 1.3));
     }
-    return Text(v, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, color: _ink, height: 1));
+    return Text(v, style: TextStyle(fontSize: size, fontWeight: FontWeight.w900, color: MsdTokens.ink, height: 1));
   }
 
   List<Widget> _domainCards() {
     final d = _data;
     List<JsonRow> of(String t) => d?.ofType(t) ?? const [];
-    String total(String t) => d == null ? _noData : '${of(t).length}';
-    String openEvents(String t) => d == null ? _noData : _n(_sum(of(t), d.events, where: CommandData.isOpen));
+    String total(String t) => d == null ? _missing : fmtInt(of(t).length);
+    String openEvents(String t) => d == null ? _missing : _n(_sum(of(t), d.events, where: CommandData.isOpen));
     String needy(String t) {
-      if (d == null || !d.hasNeeds) return _noData;
-      return '${of(t).where((f) => d.openNeedsOf(f['id']?.toString() ?? '').isNotEmpty).length}';
+      if (d == null || !d.hasNeeds) return _missing;
+      return fmtInt(of(t).where((f) => d.openNeedsOf(f['id']?.toString() ?? '').isNotEmpty).length);
     }
 
     final vehicles = d?.allVehicles ?? const <JsonRow>[];
     final hasFleet = d?.hasFleet ?? false;
-    String fleetCount(String status) => hasFleet ? '${vehicles.where((v) => v['status'] == status).length}' : _noData;
+    String fleetCount(String status) => hasFleet ? fmtInt(vehicles.where((v) => v['status'] == status).length) : _missing;
 
     final warehouses = of(CommandData.warehouse);
     final stocked = [for (final f in warehouses) d?.stores[f['id']]].whereType<List<JsonRow>>().toList();
@@ -413,30 +411,31 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
       String title,
       String icon,
       Color tone,
+      String section,
       String primary,
       String primaryLabel,
       List<(String, String, bool)> stats,
-      VoidCallback? onTap,
     })>[
       (
         num: '02',
         title: 'الأسطول',
         icon: 'truck',
-        tone: _blue,
-        primary: _stat('الأسطول', 'إجمالي المركبات', hasFleet ? '${vehicles.length}' : _noData),
+        tone: MsdTokens.blue,
+        section: 'fleet',
+        primary: _stat('الأسطول', 'إجمالي المركبات', hasFleet ? fmtInt(vehicles.length) : _missing),
         primaryLabel: 'إجمالي المركبات',
         stats: [
           ('متاحة', _stat('الأسطول', 'متاحة', fleetCount('Ready')), false),
           ('في مهمة', _stat('الأسطول', 'في مهمة', fleetCount('OnMission')), false),
-          ('صيانة', !hasFleet ? _noData : '${vehicles.where((v) => v['status'] == 'صيانة' || v['status'] == 'Maintenance').length}', true),
+          ('صيانة', !hasFleet ? _missing : fmtInt(vehicles.where((v) => v['status'] == 'صيانة' || v['status'] == 'Maintenance').length), true),
         ],
-        onTap: () => _openOps(OpsFleetScreen(api: widget.api)),
       ),
       (
         num: '03',
         title: 'صحة السجون',
         icon: 'prison',
-        tone: _teal,
+        tone: MsdTokens.teal,
+        section: 'prisons',
         primary: _stat('صحة السجون', 'إجمالي السجون', total(CommandData.prison)),
         primaryLabel: 'إجمالي السجون',
         stats: [
@@ -444,13 +443,13 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
           ('كوادر', _stat('صحة السجون', 'الكوادر الطبية', _sumKey(d?.boardPrisons ?? const [], 'medStaff')), false),
           ('أحداث مفتوحة', openEvents(CommandData.prison), true),
         ],
-        onTap: () => _openFacility('hasia'),
       ),
       (
         num: '04',
         title: 'الوحدات الطبية',
         icon: 'kit',
-        tone: _green,
+        tone: MsdTokens.successFill,
+        section: 'units',
         primary: _stat('الوحدات الطبية', 'إجمالي الوحدات', total(CommandData.unit)),
         primaryLabel: 'إجمالي الوحدات',
         stats: [
@@ -461,13 +460,13 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
           ('أحداث مفتوحة', openEvents(CommandData.unit), false),
           ('تحتاج دعمًا', _stat('الوحدات الطبية', 'تحتاج دعمًا', needy(CommandData.unit)), true),
         ],
-        onTap: () => _openOps(OpsUnitsScreen(api: widget.api)),
       ),
       (
         num: '05',
         title: 'مراكز الرعاية',
         icon: 'medcenter',
-        tone: _blue,
+        tone: MsdTokens.blue,
+        section: 'centers',
         primary: _stat('مراكز الرعاية الطبية', 'إجمالي المراكز', total(CommandData.center)),
         primaryLabel: 'إجمالي المراكز',
         stats: [
@@ -478,13 +477,13 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
           ('أحداث مفتوحة', openEvents(CommandData.center), false),
           ('تحتاج دعمًا', _stat('مراكز الرعاية الطبية', 'تحتاج دعمًا', needy(CommandData.center)), true),
         ],
-        onTap: () => _openOps(OpsCentersScreen(api: widget.api)),
       ),
       (
         num: '06',
         title: 'المشافي',
         icon: 'hospital',
-        tone: _cyan,
+        tone: MsdTokens.cyan,
+        section: 'hospitals',
         primary: total(CommandData.hospital),
         primaryLabel: 'إجمالي المشافي',
         stats: [
@@ -492,21 +491,20 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
           ('أحداث مفتوحة', openEvents(CommandData.hospital), false),
           ('تحتاج دعمًا', needy(CommandData.hospital), true),
         ],
-        onTap: () => _openFacility('harasta'),
       ),
       (
         num: '07',
         title: 'المستودعات',
         icon: 'box',
-        tone: _amber,
+        tone: MsdTokens.amberFill,
+        section: 'warehouses',
         primary: _stat('المستودعات', 'إجمالي المستودعات', total(CommandData.warehouse)),
         primaryLabel: 'إجمالي المستودعات',
         stats: [
           ('أصناف', _stat('المستودعات', 'إجمالي الأصناف', _n(items)), false),
           ('منخفضة', _stat('المستودعات', 'أصناف منخفضة', _n(low)), false),
-          ('طلبات معلّقة', _stat('المستودعات', 'طلبات معلّقة', d == null ? _noData : _n(_sum(warehouses, d.needs))), true),
+          ('طلبات معلّقة', _stat('المستودعات', 'طلبات معلّقة', d == null ? _missing : _n(_sum(warehouses, d.needs))), true),
         ],
-        onTap: () => _openOps(OpsWarehousesScreen(api: widget.api)),
       ),
     ];
 
@@ -514,7 +512,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
       for (final c in cards) ...[
         _Shell(
           tone: c.tone,
-          onTap: c.onTap,
+          onTap: () => _open(c.section),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -525,26 +523,15 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
                 children: [
                   _primaryValue(c.primary, 32),
                   const SizedBox(width: 8),
-                  Text(c.primaryLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+                  Text(c.primaryLabel, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub)),
                 ],
               ),
               const SizedBox(height: 12),
-              const Divider(height: 1, color: _line),
+              const Divider(height: 1, color: MsdTokens.line),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  for (var i = 0; i < c.stats.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 8),
-                    Expanded(
-                      child: _mini(
-                        c.stats[i].$2,
-                        c.stats[i].$1,
-                        valueColor: c.stats[i].$3 ? _red : _ink,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+              _statLines([
+                for (final s in c.stats) (s.$2, s.$1, s.$3 ? MsdTokens.danger : MsdTokens.ink),
+              ]),
             ],
           ),
         ),
@@ -554,25 +541,53 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
   }
 
   Widget _trainingCard() {
+    final d = _data;
+    final courses = d?.boardCourses ?? const <JsonRow>[];
+    final programs = d?.summaryValue('التدريب والتطوير', 'إجمالي البرامج');
+    final active = d?.summaryValue('التدريب والتطوير', 'دورات نشطة');
+    final enrolled = d?.summaryValue('التدريب والتطوير', 'إجمالي المتدربين');
+    final certified = d?.summaryValue('التدريب والتطوير', 'الشهادات الممنوحة');
+    final hasSummary = programs != null || active != null || enrolled != null || certified != null;
+    if (courses.isEmpty && !hasSummary) {
+      return _Shell(
+        tone: MsdTokens.blue,
+        onTap: () => _open('training'),
+        child: Row(
+          children: [
+            const CmdIconTile(name: 'cap', tone: MsdTokens.blue, size: 42, iconSize: 20),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('التدريب والتطوير', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: MsdTokens.ink)),
+                  SizedBox(height: 2),
+                  Text('لا توجد بيانات بعد', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.faint)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_left, size: 18, color: MsdTokens.faint),
+          ],
+        ),
+      );
+    }
+    int fold(String key) => courses.fold<int>(0, (s, e) => s + ((e[key] as num?)?.round() ?? 0));
+    final activeCount = courses.isEmpty ? null : courses.where((e) => e['status'] == 'نشطة').length;
     return _Shell(
-      tone: _blue,
-      onTap: () => _openOps(OpsTrainingScreen(api: widget.api)),
+      tone: MsdTokens.blue,
+      onTap: () => _open('training'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHead(num: '08', title: 'التدريب والتطوير', tone: _blue, icon: 'cap'),
-          _primaryValue(_stat('التدريب والتطوير', 'إجمالي البرامج', _noData), 36),
-          Text('إجمالي البرامج', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _sub)),
+          _cardHead(num: '08', title: 'التدريب والتطوير', tone: MsdTokens.blue, icon: 'cap'),
+          _primaryValue(programs != null ? fmtInt(programs) : (courses.isEmpty ? _missing : fmtInt(courses.length)), 36),
+          const Text('إجمالي البرامج', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub)),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: _mini(_stat('التدريب والتطوير', 'دورات نشطة', _noData), 'دورات نشطة')),
-              const SizedBox(width: 8),
-              Expanded(child: _mini(_stat('التدريب والتطوير', 'إجمالي المتدربين', _noData), 'متدربون')),
-              const SizedBox(width: 8),
-              Expanded(child: _mini(_stat('التدريب والتطوير', 'الشهادات الممنوحة', _noData), 'شهادات')),
-            ],
-          ),
+          _statLines([
+            (active != null ? fmtInt(active) : _n(activeCount), 'دورات نشطة', MsdTokens.ink),
+            (enrolled != null ? fmtInt(enrolled) : (courses.isEmpty ? _missing : fmtInt(fold('enrolled'))), 'متدربون', MsdTokens.ink),
+            (certified != null ? fmtInt(certified) : (courses.isEmpty ? _missing : fmtInt(fold('certified'))), 'شهادات', MsdTokens.ink),
+          ]),
         ],
       ),
     );
@@ -589,9 +604,55 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(num, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _faint)),
-                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: _ink)),
+                Text(num, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: MsdTokens.faint)),
+                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: MsdTokens.ink)),
               ],
+            ),
+          ),
+          const Icon(Icons.chevron_left, size: 18, color: MsdTokens.faint),
+        ],
+      ),
+    );
+  }
+
+  Widget _statLines(List<(String, String, Color)> items) {
+    return Column(
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          _lineStat(items[i].$1, items[i].$2, items[i].$3),
+        ],
+      ],
+    );
+  }
+
+  Widget _lineStat(String value, String label, Color valueColor) {
+    final missing = value == _missing;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: MsdTokens.lineSoft,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: MsdTokens.line),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.faint),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: missing ? MsdTokens.faint : valueColor,
+              height: 1.1,
             ),
           ),
         ],
@@ -599,41 +660,8 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
     );
   }
 
-  Widget _mini(String value, String label, {Color valueColor = _ink}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: MsdTokens.lineSoft,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (value == _noData)
-            SizedBox(
-              height: 17.6,
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(_noData,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _faint)),
-              ),
-            )
-          else
-            Text(value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: valueColor, height: 1.1)),
-          const SizedBox(height: 2),
-          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _faint)),
-        ],
-      ),
-    );
-  }
-
   Widget _sev(String label, String value, Color tone) {
+    final missing = value == _missing;
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -646,60 +674,57 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> {
         children: [
           Container(width: 8, height: 8, decoration: BoxDecoration(color: tone, shape: BoxShape.circle)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5, color: _ink))),
-          Text(value,
-              style: value == _noData
-                  ? TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: _faint)
-                  : TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: tone)),
+          Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: MsdTokens.ink))),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: missing ? 14 : 15,
+              color: missing ? MsdTokens.faint : tone,
+            ),
+          ),
         ],
       ),
     );
   }
-
-  void _openOps(Widget page) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
-  }
-
-  void _openFacility(String id) {
-    Widget page;
-    if (id == 'harasta') {
-      page = HarastaHubScreen(api: widget.api, user: widget.user, onLogout: widget.onLogout);
-    } else if (id == 'hasia') {
-      page = HasiaHubScreen(api: widget.api, user: widget.user, onLogout: widget.onLogout);
-    } else {
-      page = FacilityScreen(api: widget.api, facilityId: id);
-    }
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
-  }
 }
 
 class _Shell extends StatelessWidget {
-  const _Shell({required this.tone, required this.child, this.onTap});
+  const _Shell({required this.tone, required this.child, required this.onTap});
   final Color tone;
   final Widget child;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final body = Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+    return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: MsdTokens.line),
         boxShadow: const [BoxShadow(color: MsdTokens.deepWash, blurRadius: 20, offset: Offset(0, 10))],
       ),
-      foregroundDecoration: BoxDecoration(
+      child: Material(
+        color: MsdTokens.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border(top: BorderSide(color: tone, width: 3)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          splashColor: MsdTokens.tealWash,
+          highlightColor: MsdTokens.cyanWash,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: MsdTokens.line),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(height: 3, color: tone),
+                Padding(padding: const EdgeInsets.fromLTRB(14, 14, 14, 14), child: child),
+              ],
+            ),
+          ),
+        ),
       ),
-      child: child,
-    );
-    if (onTap == null) return body;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(18), child: body),
     );
   }
 }

@@ -29,9 +29,9 @@ class OpsHrScreen extends StatelessWidget {
           openDetail: false,
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي الكوادر', list.isEmpty ? kNoData : '${list.length}', 'user', OpsColors.cyan),
-            OpsKpi('كادر طبي', list.isEmpty ? kNoData : '$med', 'kit', OpsColors.cyan),
-            OpsKpi('كادر إداري', list.isEmpty ? kNoData : '$admin', 'folder', OpsColors.amber),
+            OpsKpi('إجمالي الكوادر', list.isEmpty ? kNoData : fmtInt(list.length), 'user', OpsColors.cyan),
+            OpsKpi('كادر طبي', list.isEmpty ? kNoData : fmtInt(med), 'kit', OpsColors.cyan),
+            OpsKpi('كادر إداري', list.isEmpty ? kNoData : fmtInt(admin), 'folder', OpsColors.amber),
           ],
           items: [
             for (final e in list)

@@ -34,7 +34,7 @@ class OpsWarehousesScreen extends StatelessWidget {
             searchHint: 'بحث باسم المستودع، المحافظة...',
             onRefresh: refresh,
             kpis: [
-              OpsKpi('إجمالي المستودعات', '${board.length}', 'box', OpsColors.cyan),
+              OpsKpi('إجمالي المستودعات', fmtInt(board.length), 'box', OpsColors.cyan),
               OpsKpi('إجمالي الأصناف', fmtInt(items), 'kit', OpsColors.blue),
               OpsKpi('أصناف منخفضة', fmtInt(low), 'warn', OpsColors.amber),
               OpsKpi('طلبات توريد معلّقة', fmtInt(pending), 'sync', OpsColors.teal),
@@ -69,7 +69,7 @@ class OpsWarehousesScreen extends StatelessWidget {
           searchHint: 'بحث باسم المستودع، المحافظة...',
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي المستودعات', '${list.length}', 'box', OpsColors.cyan),
+            OpsKpi('إجمالي المستودعات', fmtInt(list.length), 'box', OpsColors.cyan),
             OpsKpi('إجمالي الأصناف', opsCount(items), 'kit', OpsColors.blue),
             OpsKpi('أصناف منخفضة', opsCount(low), 'warn', OpsColors.amber),
             OpsKpi('طلبات توريد معلّقة', opsCount(sumOpen(d, list, d.needs)), 'sync', OpsColors.teal),
@@ -86,14 +86,14 @@ class OpsWarehousesScreen extends StatelessWidget {
                   f,
                   icon: 'box',
                   kindAr: f['typeAr']?.toString() ?? 'مستودع',
-                  metricValue: rows == null ? '—' : '${rows.length}',
+                  metricValue: rows == null ? '—' : fmtInt(rows.length),
                   metricLabel: 'صنف',
                   extraPills: [
                     if (lowRows != null && lowRows.isNotEmpty) OpsPill('منخفض ${lowRows.length}', OpsColors.amber),
                   ],
                   extraInfo: [
-                    ('الأصناف', rows == null ? kNoData : '${rows.length}'),
-                    ('أصناف منخفضة', lowRows == null ? kNoData : '${lowRows.length}'),
+                    ('الأصناف', rows == null ? kNoData : fmtInt(rows.length)),
+                    ('أصناف منخفضة', lowRows == null ? kNoData : fmtInt(lowRows.length)),
                   ],
                   tags: [
                     for (final i in lowRows ?? const <JsonRow>[])

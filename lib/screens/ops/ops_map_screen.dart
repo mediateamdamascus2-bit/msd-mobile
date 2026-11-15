@@ -104,7 +104,7 @@ List<_Asset> _assetsFrom(CommandData d) {
       id,
       layer,
       f['nameAr']?.toString() ?? id,
-      open == null ? (f['typeAr']?.toString() ?? '') : '$open حدث مفتوح',
+      open == null ? (f['typeAr']?.toString() ?? '') : '${fmtInt(open)} حدث مفتوح',
       province,
       active ? 'فعّالة' : 'غير فعّالة',
       active ? OpsColors.green : OpsColors.red,
@@ -206,8 +206,8 @@ class _OpsMapScreenState extends State<OpsMapScreen> {
       children: [
         OpsKpiRow(
           kpis: [
-            OpsKpi('أصول معروضة', '${visible.length}', 'pin', OpsColors.cyan),
-            OpsKpi('حالات حرجة', '$critical', 'warn', OpsColors.red),
+            OpsKpi('أصول معروضة', fmtInt(visible.length), 'pin', OpsColors.cyan),
+            OpsKpi('حالات حرجة', fmtInt(critical), 'warn', OpsColors.red),
             OpsKpi('طبقات فعّالة', '${_on.length}/${_layers.length}', 'grid', OpsColors.blue),
           ],
         ),

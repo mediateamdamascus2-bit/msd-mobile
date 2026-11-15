@@ -35,7 +35,7 @@ class OpsHospitalsScreen extends StatelessWidget {
             searchHint: 'بحث باسم المشفى، المحافظة...',
             onRefresh: refresh,
             kpis: [
-              OpsKpi('إجمالي المشافي', '${board.length}', 'hospital', OpsColors.cyan),
+              OpsKpi('إجمالي المشافي', fmtInt(board.length), 'hospital', OpsColors.cyan),
               OpsKpi('أسرّة متاحة', fmtInt(beds), 'check', OpsColors.green),
               OpsKpi('إحالات', fmtInt(board.fold<int>(0, (s, r) => s + ((r['referrals'] as num?)?.round() ?? 0))), 'pulse', OpsColors.blue),
               OpsKpi('أحداث مفتوحة', opsCount(sumOpen(d, d.ofType(CommandData.hospital), d.events, onlyOpen: true)), 'warn', OpsColors.amber),
@@ -54,7 +54,7 @@ class OpsHospitalsScreen extends StatelessWidget {
                   tone: OpsColors.cyan,
                   group: r['province']?.toString(),
                   filterValue: r['status']?.toString(),
-                  metricValue: '${((r['beds'] as num?)?.round() ?? 0) - ((r['bedsUsed'] as num?)?.round() ?? 0)}',
+                  metricValue: fmtInt(((r['beds'] as num?)?.round() ?? 0) - ((r['bedsUsed'] as num?)?.round() ?? 0)),
                   metricLabel: 'سرير',
                   actionLabel: r['id'] == 'HSP-00' && onOpenHarasta != null ? 'فتح واجهة المنشأة (حرستا)' : null,
                   onAction: r['id'] == 'HSP-00' ? onOpenHarasta : null,
@@ -71,7 +71,7 @@ class OpsHospitalsScreen extends StatelessWidget {
           searchHint: 'بحث باسم المشفى، المحافظة...',
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي المشافي', '${list.length}', 'hospital', OpsColors.cyan),
+            OpsKpi('إجمالي المشافي', fmtInt(list.length), 'hospital', OpsColors.cyan),
             OpsKpi('أحداث مفتوحة', opsCount(sumOpen(d, list, d.events, onlyOpen: true)), 'pulse', OpsColors.blue),
             OpsKpi('احتياجات مفتوحة', opsCount(sumOpen(d, list, d.needs)), 'warn', OpsColors.amber),
             const OpsKpi('أسرّة متاحة', kNoData, 'check', OpsColors.green),

@@ -37,11 +37,11 @@ class OpsMedPointsScreen extends StatelessWidget {
             searchHint: 'بحث بالاسم، المحافظة...',
             onRefresh: refresh,
             kpis: [
-              OpsKpi(isCenter ? 'إجمالي المراكز' : 'إجمالي الوحدات', '${board.length}', isCenter ? 'medcenter' : 'kit',
+              OpsKpi(isCenter ? 'إجمالي المراكز' : 'إجمالي الوحدات', fmtInt(board.length), isCenter ? 'medcenter' : 'kit',
                   isCenter ? OpsColors.blue : OpsColors.teal),
               OpsKpi('الكوادر الطبية', fmtInt(staff), 'user', OpsColors.green),
               OpsKpi('زيارات اليوم', fmtInt(visits), 'pulse', OpsColors.cyan),
-              OpsKpi('تحتاج دعمًا', '$needy', 'warn', OpsColors.red),
+              OpsKpi('تحتاج دعمًا', fmtInt(needy), 'warn', OpsColors.red),
             ],
             items: [
               for (final r in board)
@@ -53,7 +53,7 @@ class OpsMedPointsScreen extends StatelessWidget {
                   tone: isCenter ? OpsColors.blue : OpsColors.teal,
                   group: r['province']?.toString(),
                   filterValue: r['status']?.toString(),
-                  metricValue: r['visits']?.toString(),
+                  metricValue: r['visits'] is num ? fmtInt((r['visits'] as num).round()) : r['visits']?.toString(),
                   metricLabel: 'زيارة',
                 ),
             ],
@@ -69,7 +69,7 @@ class OpsMedPointsScreen extends StatelessWidget {
           searchHint: 'بحث بالاسم، المحافظة...',
           onRefresh: refresh,
           kpis: [
-            OpsKpi(isCenter ? 'إجمالي المراكز' : 'إجمالي الوحدات', '${list.length}', isCenter ? 'medcenter' : 'kit',
+            OpsKpi(isCenter ? 'إجمالي المراكز' : 'إجمالي الوحدات', fmtInt(list.length), isCenter ? 'medcenter' : 'kit',
                 isCenter ? OpsColors.blue : OpsColors.teal),
             const OpsKpi('الكوادر الطبية', kNoData, 'user', OpsColors.green),
             OpsKpi('أحداث مفتوحة', opsCount(sumOpen(d, list, d.events, onlyOpen: true)), 'pulse', OpsColors.cyan),

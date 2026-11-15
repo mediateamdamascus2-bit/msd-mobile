@@ -71,10 +71,10 @@ class OpsFleetScreen extends StatelessWidget {
           openDetail: false,
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي المركبات', has ? '${all.length}' : kNoData, 'truck', OpsColors.cyan),
-            OpsKpi('متاحة الآن', has ? '${count(['Ready', 'متاحة'])}' : kNoData, 'check', OpsColors.green),
-            OpsKpi('في مهمة', has ? '${count(['OnMission', 'في مهمة'])}' : kNoData, 'ambulance', OpsColors.blue),
-            OpsKpi('صيانة', has ? '${count(['Maintenance', 'صيانة'])}' : kNoData, 'gear', OpsColors.amber),
+            OpsKpi('إجمالي المركبات', has ? fmtInt(all.length) : kNoData, 'truck', OpsColors.cyan),
+            OpsKpi('متاحة الآن', has ? fmtInt(count(['Ready', 'متاحة'])) : kNoData, 'check', OpsColors.green),
+            OpsKpi('في مهمة', has ? fmtInt(count(['OnMission', 'في مهمة'])) : kNoData, 'ambulance', OpsColors.blue),
+            OpsKpi('صيانة', has ? fmtInt(count(['Maintenance', 'صيانة'])) : kNoData, 'gear', OpsColors.amber),
           ],
           filters: [
             for (final e in {for (final row in _status.values) row.$1: row.$2}.entries) OpsFilterOption(e.key, e.value),

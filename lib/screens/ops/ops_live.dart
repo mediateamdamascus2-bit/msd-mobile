@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../api_client.dart';
 import '../../data/command_data.dart';
@@ -21,12 +22,14 @@ class OpsLive extends StatefulWidget {
     required this.title,
     required this.eyebrow,
     required this.builder,
+    this.implyLeading = true,
   });
 
   final ApiClient api;
   final String title;
   final String eyebrow;
   final OpsLiveBuilder builder;
+  final bool implyLeading;
 
   @override
   State<OpsLive> createState() => _OpsLiveState();
@@ -74,6 +77,7 @@ class _OpsLiveState extends State<OpsLive> {
       title: widget.title,
       eyebrow: widget.eyebrow,
       onRefresh: _load,
+      implyLeading: widget.implyLeading,
       children: [
         if (_error == null)
           const Padding(
@@ -118,15 +122,9 @@ class OpsNoDataScreen extends StatelessWidget {
 
 String opsCount(int? n) => n == null ? kNoData : fmtInt(n);
 
-String fmtInt(int n) {
-  final s = n.abs().toString();
-  final b = StringBuffer(n < 0 ? '-' : '');
-  for (var i = 0; i < s.length; i++) {
-    if (i > 0 && (s.length - i) % 3 == 0) b.write('٬');
-    b.write(s[i]);
-  }
-  return b.toString();
-}
+final _thousands = NumberFormat('#,##0', 'en');
+
+String fmtInt(int n) => _thousands.format(n);
 
 Color severityColor(Object? severity) {
   final s = severity?.toString() ?? '';
@@ -182,18 +180,18 @@ OpsItem facilityItem(
     group: province,
     pills: [
       OpsPill(status, tone),
-      OpsPill('أحداث مفتوحة ${open == null ? '—' : open.length}', OpsColors.blue),
+      OpsPill('أحداث مفتوحة ${open == null ? '—' : fmtInt(open.length)}', OpsColors.blue),
       ...extraPills,
     ],
-    metricValue: metricValue ?? (open == null ? '—' : '${open.length}'),
+    metricValue: metricValue ?? (open == null ? '—' : fmtInt(open.length)),
     metricLabel: metricLabel ?? 'حدث مفتوح',
     bannerTitle: '$kindAr — $province',
-    bannerSub: needs == null ? 'الاحتياجات: $kNoData' : '${needs.length} احتياج مفتوح',
+    bannerSub: needs == null ? 'الاحتياجات: $kNoData' : '${fmtInt(needs.length)} احتياج مفتوح',
     info: [
       ('المحافظة', province.isEmpty ? '—' : province),
       ('الحالة', active ? 'فعّالة' : 'غير فعّالة'),
-      ('الأحداث المفتوحة', open == null ? kNoData : '${open.length}'),
-      ('الاحتياجات المفتوحة', needs == null ? kNoData : '${needs.length}'),
+      ('الأحداث المفتوحة', open == null ? kNoData : fmtInt(open.length)),
+      ('الاحتياجات المفتوحة', needs == null ? kNoData : fmtInt(needs.length)),
       ...extraInfo,
     ],
     tags: tags.isNotEmpty ? tags : [for (final n in needs ?? const <JsonRow>[]) n['title']?.toString() ?? ''],

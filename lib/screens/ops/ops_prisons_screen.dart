@@ -33,7 +33,7 @@ class OpsPrisonsScreen extends StatelessWidget {
             searchHint: 'بحث باسم السجن، المحافظة...',
             onRefresh: refresh,
             kpis: [
-              OpsKpi('إجمالي السجون', '${board.length}', 'prison', OpsColors.cyan),
+              OpsKpi('إجمالي السجون', fmtInt(board.length), 'prison', OpsColors.cyan),
               OpsKpi('النزلاء', fmtInt(inmates), 'user', OpsColors.blue),
               OpsKpi('حالات نشطة', fmtInt(cases), 'pulse', OpsColors.amber),
               OpsKpi('الكوادر الطبية', fmtInt(staff), 'kit', OpsColors.teal),
@@ -73,7 +73,7 @@ class OpsPrisonsScreen extends StatelessWidget {
           searchHint: 'بحث باسم السجن، المحافظة...',
           onRefresh: refresh,
           kpis: [
-            OpsKpi('إجمالي السجون', '${list.length}', 'prison', OpsColors.cyan),
+            OpsKpi('إجمالي السجون', fmtInt(list.length), 'prison', OpsColors.cyan),
             OpsKpi('نزلاء حسيا', opsCount(d.inmates), 'user', OpsColors.blue),
             OpsKpi('أحداث مفتوحة', opsCount(sumOpen(d, list, d.events, onlyOpen: true)), 'pulse', OpsColors.amber),
             const OpsKpi('الكوادر الطبية', kNoData, 'kit', OpsColors.teal),
