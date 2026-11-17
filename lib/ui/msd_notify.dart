@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../api_exception.dart';
 import '../theme/app_theme.dart';
 
 /// Popup notifications for errors / success (replaces inline alert strips).
 abstract final class MsdNotify {
-  static Future<void> error(BuildContext context, String message) {
+  static Future<void> error(BuildContext context, Object error) {
     return _show(
       context,
       title: 'تنبيه',
-      message: message,
+      message: ApiException.messageOf(error),
       color: MsdColors.danger,
       icon: Icons.error_outline,
     );
@@ -52,7 +53,7 @@ abstract final class MsdNotify {
           ],
         ),
         content: Text(
-          message.replaceFirst('Exception: ', ''),
+          message,
           style: TextStyle(height: 1.45, color: MsdColors.sub, fontWeight: FontWeight.w600),
         ),
         actions: [

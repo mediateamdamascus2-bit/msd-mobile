@@ -146,9 +146,18 @@ class _NativeAppShellState extends State<NativeAppShell> with WidgetsBindingObse
       builder: (ctx) => AlertDialog(
         title: const Text('تسجيل الخروج'),
         content: const Text('هل تريد تسجيل الخروج؟'),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('تسجيل الخروج')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: MsdTokens.danger),
+            child: const Text('تسجيل الخروج'),
+          ),
         ],
       ),
     );

@@ -1,8 +1,4 @@
-# تطبيق إدارة الخدمات الطبية
-
-- [تحميل APK](https://github.com/mediateamdamascus2-bit/msd-mobile/releases/download/v1.0.0/msd-mobile-v1.0.0.apk)
-- كود الخادم: https://github.com/mediateamdamascus2-bit/msd-api
-- قائمة الاختبار اليدوي: [docs/migration/mobile.md](docs/migration/mobile.md)
+# تطبيق إدارة الخدمات الطبية (Flutter)
 
 تطبيق جوال **أصلي قابل للتثبيت** — منفصل تماماً عن موقع الويب.
 
@@ -18,6 +14,11 @@
 - الرئيسية: منشآت من `/api/facilities`
 - الأحداث: `/api/facilities/{id}/events`
 - الإعدادات: عنوان الخادم + فحص `/health` + إشعارات محلية
+
+### حسابات تجريبية (Development)
+
+- `admin` / `1234`
+- `harasta` / `1234`
 
 ### عنوان الخادم في التطبيق
 

@@ -1,6 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:msd_mobile/config.dart';
+import 'package:msd_mobile/post_login_home.dart';
 import 'package:msd_mobile/user_roles.dart';
+
+Map<String, dynamic> _user({
+  String? homePath,
+  String? facilityId,
+  List<String> roles = const [],
+  String? username,
+}) =>
+    {
+      if (homePath != null) 'homePath': homePath,
+      if (facilityId != null) 'facilityId': facilityId,
+      'roles': roles,
+      if (username != null) 'username': username,
+    };
 
 void main() {
   test('canonicalHome keeps the new station paths and rewrites the old ones', () {
@@ -39,5 +53,59 @@ void main() {
     expect(AppConfig.isAllowedBase('http://10.0.2.2:5148'), isTrue);
     expect(AppConfig.isAllowedBase('http://example.com'), isFalse);
     expect(AppConfig.isAllowedBase('https://example.com'), isTrue);
+  });
+
+  test('display station lands on the display-only message', () {
+    expect(
+      resolveMobileLanding(_user(homePath: '/hospitals/harasta/station/display')),
+      MobileLanding.displayStation,
+    );
+    expect(
+      resolveMobileLanding(_user(homePath: '/hospitals/mujtahed/station/display')),
+      MobileLanding.displayStation,
+    );
+  });
+
+  test('events home lands on the events desk', () {
+    expect(resolveMobileLanding(_user(homePath: '/events')), MobileLanding.eventsDesk);
+    expect(resolveMobileLanding(_user(homePath: '/events/desk')), MobileLanding.eventsDesk);
+    expect(resolveMobileLanding(_user(homePath: '/events/register')), MobileLanding.eventsDesk);
+  });
+
+  test('fleet desk home lands on the fleet desk', () {
+    expect(resolveMobileLanding(_user(homePath: '/fleet/desk')), MobileLanding.fleetDesk);
+    expect(resolveMobileLanding(_user(homePath: '/fleet/desk/main')), MobileLanding.fleetDesk);
+  });
+
+  test('field and update homes land on the field unit', () {
+    expect(resolveMobileLanding(_user(homePath: '/field')), MobileLanding.fieldUnit);
+    expect(resolveMobileLanding(_user(homePath: '/update')), MobileLanding.fieldUnit);
+    expect(resolveMobileLanding(_user(homePath: '/f/unit-homs-2')), MobileLanding.fieldUnit);
+  });
+
+  test('Admin alone gets NativeAppShell; unknown paths are unsupported', () {
+    expect(
+      resolveMobileLanding(_user(homePath: '/dashboard', roles: const ['Admin'])),
+      MobileLanding.adminShell,
+    );
+    expect(
+      resolveMobileLanding(_user(homePath: '/dashboard', roles: const ['FacilityUser'])),
+      MobileLanding.unsupported,
+    );
+    expect(
+      resolveMobileLanding(_user(homePath: '/somewhere-else')),
+      MobileLanding.unsupported,
+    );
+  });
+
+  test('known hospital stations still resolve before the unsupported fallback', () {
+    expect(
+      resolveMobileLanding(_user(homePath: '/hospitals/harasta/station/booking')),
+      MobileLanding.booking,
+    );
+    expect(
+      resolveMobileLanding(_user(homePath: '/fleet/driver/DRV-01')),
+      MobileLanding.driver,
+    );
   });
 }

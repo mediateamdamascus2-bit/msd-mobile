@@ -159,6 +159,8 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
                 padding: const EdgeInsets.fromLTRB(14, 10, 14, 28),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
+                    _summaryGrid(),
+                    const SizedBox(height: 14),
                     _featuredEvents(),
                     const SizedBox(height: 12),
                     ..._domainCards(),
@@ -347,6 +349,67 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
     return any ? fmtInt(n) : _missing;
   }
 
+  Widget _summaryGrid() {
+    final d = _data;
+    final openEvents = d == null || !d.hasEvents
+        ? _missing
+        : fmtInt(d.allEvents.where(CommandData.isOpen).length);
+    final vehicles = d?.allVehicles ?? const <JsonRow>[];
+    final onMission = d == null || !(d.hasFleet)
+        ? _missing
+        : fmtInt(vehicles.where((v) => v['status'] == 'OnMission' || v['status'] == 'في مهمة').length);
+    final inmates = d?.summaryValue('صحة السجون', 'إجمالي النزلاء') ?? d?.inmates;
+    final cases = () {
+      final board = d?.boardPrisons ?? const <JsonRow>[];
+      if (board.isEmpty) return null;
+      var any = false;
+      var n = 0;
+      for (final r in board) {
+        final v = r['activeCases'];
+        if (v is! num) continue;
+        any = true;
+        n += v.round();
+      }
+      return any ? n : null;
+    }();
+    final people = inmates ?? cases;
+    final peopleLabel = inmates != null ? 'النزلاء' : 'الحالات';
+    final openNeeds = d == null || !d.hasNeeds
+        ? _missing
+        : fmtInt(d.needs.values.fold<int>(0, (s, rows) => s + (rows?.length ?? 0)));
+
+    final cells = <({String value, String label, String section, Color tone, String icon})>[
+      (value: openEvents, label: 'الأحداث المفتوحة', section: 'events', tone: MsdTokens.cyan, icon: 'pulse'),
+      (value: onMission, label: 'المركبات في مهمة', section: 'fleet', tone: MsdTokens.blue, icon: 'truck'),
+      (value: people == null ? _missing : fmtInt(people), label: peopleLabel, section: 'prisons', tone: MsdTokens.teal, icon: 'prison'),
+      (value: openNeeds, label: 'الاحتياجات المفتوحة', section: 'needs', tone: MsdTokens.amberFill, icon: 'box'),
+    ];
+
+    return Column(
+      children: [
+        for (var row = 0; row < 2; row++) ...[
+          if (row > 0) const SizedBox(height: 8),
+          Row(
+            children: [
+              for (var col = 0; col < 2; col++) ...[
+                if (col > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: _SummaryCell(
+                    value: cells[row * 2 + col].value,
+                    label: cells[row * 2 + col].label,
+                    tone: cells[row * 2 + col].tone,
+                    icon: cells[row * 2 + col].icon,
+                    onTap: () => _open(cells[row * 2 + col].section),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _featuredEvents() {
     final d = _data;
     final has = d?.hasEvents ?? false;
@@ -360,7 +423,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHead(num: '01', title: 'الأحداث الطبية', tone: MsdTokens.cyan, icon: 'pulse'),
+          _cardHead(title: 'الأحداث الطبية', tone: MsdTokens.cyan, icon: 'pulse'),
           _primaryValue(_stat('الأحداث الطبية', 'إجمالي الأحداث', has ? fmtInt(all.length) : _missing), 40),
           const Text('إجمالي الأحداث', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub)),
           const SizedBox(height: 12),
@@ -407,7 +470,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
     final low = stocked.isEmpty ? null : stocked.fold<int>(0, (s, r) => s + r.where((i) => i['low'] == true).length);
 
     final cards = <({
-      String num,
       String title,
       String icon,
       Color tone,
@@ -417,7 +479,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
       List<(String, String, bool)> stats,
     })>[
       (
-        num: '02',
         title: 'الأسطول',
         icon: 'truck',
         tone: MsdTokens.blue,
@@ -431,7 +492,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
         ],
       ),
       (
-        num: '03',
         title: 'صحة السجون',
         icon: 'prison',
         tone: MsdTokens.teal,
@@ -445,7 +505,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
         ],
       ),
       (
-        num: '04',
         title: 'الوحدات الطبية',
         icon: 'kit',
         tone: MsdTokens.successFill,
@@ -462,7 +521,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
         ],
       ),
       (
-        num: '05',
         title: 'مراكز الرعاية',
         icon: 'medcenter',
         tone: MsdTokens.blue,
@@ -479,7 +537,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
         ],
       ),
       (
-        num: '06',
         title: 'المشافي',
         icon: 'hospital',
         tone: MsdTokens.cyan,
@@ -493,7 +550,6 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
         ],
       ),
       (
-        num: '07',
         title: 'المستودعات',
         icon: 'box',
         tone: MsdTokens.amberFill,
@@ -516,7 +572,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _cardHead(num: c.num, title: c.title, tone: c.tone, icon: c.icon),
+              _cardHead(title: c.title, tone: c.tone, icon: c.icon),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
@@ -579,7 +635,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHead(num: '08', title: 'التدريب والتطوير', tone: MsdTokens.blue, icon: 'cap'),
+          _cardHead(title: 'التدريب والتطوير', tone: MsdTokens.blue, icon: 'cap'),
           _primaryValue(programs != null ? fmtInt(programs) : (courses.isEmpty ? _missing : fmtInt(courses.length)), 36),
           const Text('إجمالي البرامج', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub)),
           const SizedBox(height: 12),
@@ -593,7 +649,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
     );
   }
 
-  Widget _cardHead({required String num, required String title, required Color tone, required String icon}) {
+  Widget _cardHead({required String title, required Color tone, required String icon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -601,13 +657,7 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
           CmdIconTile(name: icon, tone: tone, size: 42, iconSize: 20),
           const SizedBox(width: 10),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(num, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: MsdTokens.faint)),
-                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: MsdTokens.ink)),
-              ],
-            ),
+            child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: MsdTokens.ink)),
           ),
           const Icon(Icons.chevron_left, size: 18, color: MsdTokens.faint),
         ],
@@ -684,6 +734,75 @@ class _NativeHomeScreenState extends State<NativeHomeScreen> with WidgetsBinding
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SummaryCell extends StatelessWidget {
+  const _SummaryCell({
+    required this.value,
+    required this.label,
+    required this.tone,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String value;
+  final String label;
+  final Color tone;
+  final String icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final missing = value == '—';
+    return Material(
+      color: MsdTokens.white,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: MsdTokens.tealWash,
+        highlightColor: MsdTokens.cyanWash,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: MsdTokens.line),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    CmdIconTile(name: icon, tone: tone, size: 34, iconSize: 16),
+                    const Spacer(),
+                    const Icon(Icons.chevron_left, size: 16, color: MsdTokens.faint),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: missing ? MsdTokens.faint : MsdTokens.ink,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

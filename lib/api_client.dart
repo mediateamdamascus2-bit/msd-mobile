@@ -5,15 +5,45 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'api_exception.dart';
 import 'services/settings_store.dart';
 
 class ApiClient {
-  ApiClient();
+  ApiClient({http.Client? httpClient}) : _http = httpClient ?? http.Client();
+
+  final http.Client _http;
 
   static const requestTimeout = Duration(seconds: 15);
   static const networkErrorMessage = 'تعذر الاتصال بالخادم — تحقق من الشبكة';
   static const sessionExpiredMessage = 'انتهت الجلسة';
   static const accountDisabledMessage = 'هذا الحساب معطّل. راجع مسؤول النظام.';
+
+  Never _throwHttp(http.Response res, String fallback) {
+    throw ApiException(_readErrorBody(res, fallback), statusCode: res.statusCode);
+  }
+
+  String _readErrorBody(http.Response res, String fallback) {
+    try {
+      final body = jsonDecode(res.body);
+      if (body is Map) {
+        for (final key in ['detail', 'title', 'message', 'error']) {
+          final v = body[key]?.toString().trim();
+          if (v != null &&
+              v.isNotEmpty &&
+              v != 'One or more validation errors occurred.') {
+            return v;
+          }
+        }
+        final errors = body['errors'];
+        if (errors is Map && errors.isNotEmpty) {
+          final first = errors.values.first;
+          if (first is List && first.isNotEmpty) return first.first.toString();
+          if (first != null) return first.toString();
+        }
+      }
+    } catch (_) {}
+    return fallback;
+  }
 
   /// Set by the app shell. The message is [sessionExpiredMessage] or [accountDisabledMessage].
   static void Function(String message)? onSessionExpired;
@@ -47,21 +77,42 @@ class ApiClient {
 
   Future<void> _saveToken(String? token) async {
     _token = token;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    if (token == null) {
-      await _storage.delete(key: _tokenKey);
-    } else {
-      await _storage.write(key: _tokenKey, value: token);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_tokenKey);
+      if (token == null) {
+        await _storage.delete(key: _tokenKey);
+      } else {
+        await _storage.write(key: _tokenKey, value: token);
+      }
+    } catch (_) {
+      // In-memory token still applies (unit tests / missing plugin).
     }
   }
 
   bool get isLoggedIn => _token != null && _token!.isNotEmpty;
 
-  Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (_token != null) 'Authorization': 'Bearer $_token',
-      };
+  /// Builds request headers at send time so a post-refresh retry uses the new token.
+  Map<String, String> _requestHeaders([Map<String, String>? extra]) {
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      if (extra != null) ...extra,
+    };
+    if (_token != null && _token!.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $_token';
+    } else {
+      headers.remove('Authorization');
+    }
+    return headers;
+  }
+
+  Map<String, String> get _headers => _requestHeaders();
+
+  /// Test-only: set session tokens without touching secure storage.
+  void debugSetSession({required String accessToken, String? refreshToken}) {
+    _token = accessToken;
+    _refresh = refreshToken;
+  }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     final res = await _post(
@@ -71,16 +122,16 @@ class ApiClient {
     );
 
     if (res.statusCode == 401) {
-      throw Exception('اسم المستخدم أو كلمة المرور غير صحيحة');
+      throw ApiException('اسم المستخدم أو كلمة المرور غير صحيحة');
     }
     if (_isAccountDisabled(res)) {
-      throw Exception(accountDisabledMessage);
+      throw ApiException(accountDisabledMessage);
     }
     if (res.statusCode == 429 || res.statusCode == 423) {
-      throw Exception('الحساب مقفل مؤقتًا بعد محاولات كثيرة');
+      throw ApiException('الحساب مقفل مؤقتًا بعد محاولات كثيرة');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر تسجيل الدخول (${res.statusCode})');
+      throw ApiException('تعذر تسجيل الدخول (${res.statusCode})');
     }
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
@@ -102,7 +153,7 @@ class ApiClient {
     await _saveRefresh(null);
     if (access == null || access.isEmpty) return;
     try {
-      await _send(() => http.post(
+      await _send(() => _http.post(
             Uri.parse('$_base/api/auth/logout'),
             headers: {
               'Content-Type': 'application/json',
@@ -114,17 +165,19 @@ class ApiClient {
 
   Future<void> _saveRefresh(String? token) async {
     _refresh = token;
-    if (token == null || token.isEmpty) {
-      await _storage.delete(key: _refreshKey);
-    } else {
-      await _storage.write(key: _refreshKey, value: token);
-    }
+    try {
+      if (token == null || token.isEmpty) {
+        await _storage.delete(key: _refreshKey);
+      } else {
+        await _storage.write(key: _refreshKey, value: token);
+      }
+    } catch (_) {}
   }
 
   /// GET `/health` for the login status dot. Does not refresh or clear the session.
   Future<bool> serverReachable() async {
     try {
-      final res = await http.get(Uri.parse('$_base/health')).timeout(const Duration(seconds: 4));
+      final res = await _http.get(Uri.parse('$_base/health')).timeout(const Duration(seconds: 4));
       return res.statusCode >= 200 && res.statusCode < 300;
     } catch (_) {
       return false;
@@ -140,7 +193,7 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الحساب (${res.statusCode})');
+      throw ApiException('تعذر جلب الحساب (${res.statusCode})');
     }
     final data = jsonDecode(res.body) as Map<String, dynamic>;
     final roles = data['roles'];
@@ -177,7 +230,7 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب المنشآت (${res.statusCode})');
+      throw ApiException('تعذر جلب المنشآت (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -189,9 +242,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لأحداث هذه المنشأة');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لأحداث هذه المنشأة');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الأحداث (${res.statusCode})');
+      throw ApiException('تعذر جلب الأحداث (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -199,7 +252,7 @@ class ApiClient {
   Future<Map<String, dynamic>> pingHealth() async {
     final res = await _get(Uri.parse('$_base/health')).timeout(const Duration(seconds: 6));
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('الخادم غير متاح (${res.statusCode})');
+      throw ApiException('الخادم غير متاح (${res.statusCode})');
     }
     try {
       return jsonDecode(res.body) as Map<String, dynamic>;
@@ -217,7 +270,7 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب المنشأة (${res.statusCode})');
+      throw ApiException('تعذر جلب المنشأة (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -231,10 +284,10 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الإشغالات (${res.statusCode})');
+      throw ApiException('تعذر جلب الإشغالات (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -262,10 +315,10 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر حفظ الإشغالات (${res.statusCode})');
+      throw ApiException('تعذر حفظ الإشغالات (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -279,10 +332,10 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب طابور الاستقبال (${res.statusCode})');
+      throw ApiException('تعذر جلب طابور الاستقبال (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -294,9 +347,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لهذه العيادة');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لهذه العيادة');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب طابور العيادة (${res.statusCode})');
+      throw ApiException('تعذر جلب طابور العيادة (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -373,9 +426,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب عدّادات العيادات (${res.statusCode})');
+      throw ApiException('تعذر جلب عدّادات العيادات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -386,9 +439,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب إحصائيات العيادات (${res.statusCode})');
+      throw ApiException('تعذر جلب إحصائيات العيادات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -407,9 +460,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب أقسام التحويل (${res.statusCode})');
+      throw ApiException('تعذر جلب أقسام التحويل (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -420,9 +473,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للأسطول');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للأسطول');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الأسطول (${res.statusCode})');
+      throw ApiException('تعذر جلب الأسطول (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -447,9 +500,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للمستودعات');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للمستودعات');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب المستودعات (${res.statusCode})');
+      throw ApiException('تعذر جلب المستودعات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -460,9 +513,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للأصول');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للأصول');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الأصول (${res.statusCode})');
+      throw ApiException('تعذر جلب الأصول (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -520,9 +573,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب مؤشرات التشغيل (${res.statusCode})');
+      throw ApiException('تعذر جلب مؤشرات التشغيل (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -534,9 +587,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لهذا القسم');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لهذا القسم');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب طابور القسم (${res.statusCode})');
+      throw ApiException('تعذر جلب طابور القسم (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -602,19 +655,19 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode == 400) {
       try {
         final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
+        throw ApiException(err['error']?.toString() ?? 'طلب غير صالح');
       } catch (e) {
         if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
+        throw ApiException('طلب غير صالح');
       }
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر فتح الاستمارة (${res.statusCode})');
+      throw ApiException('تعذر فتح الاستمارة (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -633,19 +686,19 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode == 400) {
       try {
         final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
+        throw ApiException(err['error']?.toString() ?? 'طلب غير صالح');
       } catch (e) {
         if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
+        throw ApiException('طلب غير صالح');
       }
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر التحويل (${res.statusCode})');
+      throw ApiException('تعذر التحويل (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -694,10 +747,10 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الحجوزات (${res.statusCode})');
+      throw ApiException('تعذر جلب الحجوزات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -725,34 +778,48 @@ class ApiClient {
       await _expire();
     }
     if (res.statusCode == 403) {
-      throw Exception('لا صلاحية لهذه العملية');
-    }
-    if (res.statusCode == 400) {
-      try {
-        final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
-      } catch (e) {
-        if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
-      }
+      throw ApiException('لا صلاحية لهذه العملية');
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('$failLabel (${res.statusCode})');
+      _throwHttp(res, '$failLabel (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  Future<Map<String, dynamic>> bookingAvailability(String facilityId, {required String date}) async {
+  Future<Map<String, dynamic>> bookingAvailability(
+    String facilityId, {
+    required String date,
+    String? clinic,
+  }) async {
+    final q = StringBuffer('date=$date');
+    if (clinic != null && clinic.isNotEmpty) {
+      q.write('&clinic=${Uri.encodeQueryComponent(clinic)}');
+    }
     final res = await _get(
-      Uri.parse('$_base/api/stations/$facilityId/booking/availability?date=$date'),
+      Uri.parse('$_base/api/stations/$facilityId/booking/availability?$q'),
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للحجز');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب التوفر (${res.statusCode})');
+      _throwHttp(res, 'تعذر جلب التوفر (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  Future<List<String>> bookingClosedDays(String facilityId) async {
+    final res = await _get(
+      Uri.parse('$_base/api/facilities/$facilityId/booking/closed-days'),
+      headers: _headers,
+    );
+    _ensureAuth(res.statusCode);
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      _throwHttp(res, 'تعذر جلب أيام العطلة (${res.statusCode})');
+    }
+    final raw = jsonDecode(res.body);
+    if (raw is! List) return const [];
+    return [for (final d in raw) d.toString()];
   }
 
   Future<List<dynamic>> bookingList(
@@ -768,9 +835,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للحجز');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الحجوزات (${res.statusCode})');
+      throw ApiException('تعذر جلب الحجوزات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -799,18 +866,9 @@ class ApiClient {
       }),
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للحجز');
-    if (res.statusCode == 400) {
-      try {
-        final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
-      } catch (e) {
-        if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
-      }
-    }
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر إنشاء الحجز (${res.statusCode})');
+      _throwHttp(res, 'تعذر إنشاء الحجز (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -855,18 +913,9 @@ class ApiClient {
       body: '{}',
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للحجز');
-    if (res.statusCode == 400) {
-      try {
-        final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
-      } catch (e) {
-        if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
-      }
-    }
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر الإلغاء (${res.statusCode})');
+      _throwHttp(res, 'تعذر الإلغاء (${res.statusCode})');
     }
   }
 
@@ -906,9 +955,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لاحتياجات هذه المنشأة');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لاحتياجات هذه المنشأة');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الاحتياجات (${res.statusCode})');
+      throw ApiException('تعذر جلب الاحتياجات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -954,9 +1003,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لسجل نزلاء حسيا');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لسجل نزلاء حسيا');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب النزلاء (${res.statusCode})');
+      throw ApiException('تعذر جلب النزلاء (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -980,9 +1029,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية لحالات حسيا');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لحالات حسيا');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الحالات (${res.statusCode})');
+      throw ApiException('تعذر جلب الحالات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -1021,9 +1070,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للصيدلية');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للصيدلية');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب المخزون (${res.statusCode})');
+      throw ApiException('تعذر جلب المخزون (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -1034,9 +1083,9 @@ class ApiClient {
       headers: _headers,
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للوصفات');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للوصفات');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر جلب الوصفات (${res.statusCode})');
+      throw ApiException('تعذر جلب الوصفات (${res.statusCode})');
     }
     return jsonDecode(res.body) as List<dynamic>;
   }
@@ -1048,25 +1097,25 @@ class ApiClient {
       body: jsonEncode(body),
     );
     _ensureAuth(res.statusCode);
-    if (res.statusCode == 403) throw Exception('لا صلاحية للصرف');
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للصرف');
     if (res.statusCode == 400) {
       try {
         final err = jsonDecode(res.body) as Map<String, dynamic>;
-        throw Exception(err['error']?.toString() ?? 'طلب غير صالح');
+        throw ApiException(err['error']?.toString() ?? 'طلب غير صالح');
       } catch (e) {
         if (e is Exception) rethrow;
-        throw Exception('طلب غير صالح');
+        throw ApiException('طلب غير صالح');
       }
     }
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw Exception('تعذر الصرف (${res.statusCode})');
+      throw ApiException('تعذر الصرف (${res.statusCode})');
     }
   }
 
   void _ensureAuth(int statusCode) {
     if (statusCode == 401) {
       unawaited(_expire());
-      throw Exception(sessionExpiredMessage);
+      throw ApiException(sessionExpiredMessage);
     }
   }
 
@@ -1074,28 +1123,33 @@ class ApiClient {
   Future<Never> _expire([String message = sessionExpiredMessage]) async {
     await logout();
     onSessionExpired?.call(message);
-    throw Exception(message);
+    throw ApiException(message);
   }
 
   Future<http.Response> _send(Future<http.Response> Function() request) async {
-    if (_base.isEmpty) throw Exception('لم يُضبط عنوان الخادم لهذا الإصدار');
+    if (_base.isEmpty) throw ApiException('لم يُضبط عنوان الخادم لهذا الإصدار');
     try {
       return await request().timeout(requestTimeout);
     } on TimeoutException {
-      throw Exception(networkErrorMessage);
+      throw ApiException(networkErrorMessage);
     } on http.ClientException {
-      throw Exception(networkErrorMessage);
+      throw ApiException(networkErrorMessage);
     }
   }
 
   Future<http.Response> _get(Uri url, {Map<String, String>? headers}) =>
-      _withRefresh(url, () => http.get(url, headers: _headers));
+      _withRefresh(url, () => _http.get(url, headers: _requestHeaders(headers)));
 
   Future<http.Response> _post(Uri url, {Map<String, String>? headers, Object? body}) =>
-      _withRefresh(url, () => http.post(url, headers: headers ?? _headers, body: body));
+      _withRefresh(url, () => _http.post(url, headers: _requestHeaders(headers), body: body));
 
   Future<http.Response> _put(Uri url, {Map<String, String>? headers, Object? body}) =>
-      _withRefresh(url, () => http.put(url, headers: headers ?? _headers, body: body));
+      _withRefresh(url, () => _http.put(url, headers: _requestHeaders(headers), body: body));
+
+  // Ready for authenticated DELETE endpoints; headers rebuilt on each send/retry.
+  // ignore: unused_element
+  Future<http.Response> _delete(Uri url, {Map<String, String>? headers}) =>
+      _withRefresh(url, () => _http.delete(url, headers: _requestHeaders(headers)));
 
   bool _canRefresh(Uri url) {
     final path = url.path;
@@ -1107,6 +1161,7 @@ class ApiClient {
     if (_isAccountDisabled(res)) await _expire(accountDisabledMessage);
     if (res.statusCode != 401 || !_canRefresh(url)) return res;
     final result = await _refreshShared();
+    // Do not retry when refresh fails — expire/leave immediately.
     if (result == _RefreshResult.disabled) await _expire(accountDisabledMessage);
     if (result != _RefreshResult.ok) await _expire();
     final again = await _send(request);
@@ -1129,7 +1184,7 @@ class ApiClient {
     final refresh = _refresh;
     if (refresh == null || refresh.isEmpty) return _RefreshResult.failed;
     try {
-      final res = await _send(() => http.post(
+      final res = await _send(() => _http.post(
             Uri.parse('$_base/api/auth/refresh'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'refreshToken': refresh}),
