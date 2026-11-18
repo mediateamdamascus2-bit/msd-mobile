@@ -79,6 +79,7 @@ class MsdTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         errorText: errorText,
+        errorMaxLines: 2,
         alignLabelWithHint: true,
       ),
       onChanged: onChanged,

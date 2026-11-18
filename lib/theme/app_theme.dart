@@ -93,7 +93,8 @@ abstract final class AppTheme {
         focusedBorder: inputBorder.copyWith(
           borderSide: const BorderSide(color: MsdTokens.teal, width: 1.8),
         ),
-        errorStyle: const TextStyle(fontFamily: 'Tajawal', fontSize: 12, color: MsdTokens.danger),
+        errorMaxLines: 2,
+        errorStyle: const TextStyle(fontFamily: 'Tajawal', fontSize: 12, color: MsdTokens.danger, height: 1.3),
         labelStyle: const TextStyle(fontFamily: 'Tajawal', color: MsdTokens.teal, fontSize: 13, fontWeight: FontWeight.w700),
         floatingLabelStyle: const TextStyle(fontFamily: 'Tajawal', color: MsdTokens.teal, fontWeight: FontWeight.w700),
         hintStyle: const TextStyle(fontFamily: 'Tajawal', color: MsdTokens.faint, fontSize: 13),

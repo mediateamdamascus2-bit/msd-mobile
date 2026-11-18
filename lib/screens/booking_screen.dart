@@ -554,10 +554,15 @@ class _BookingScreenState extends State<BookingScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                child: _CompactHeader(
+                child: StationCompactHeader(
                   station: 'حجز الإدارات',
-                  hospital: 'مشفى حرستا',
+                  hospital: 'مشفى الشرطة في حرستا',
                   onLogout: widget.onLogout,
+                  onSettings: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('إعدادات المحطة من قائمة التطبيق')),
+                    );
+                  },
                 ),
               ),
               Padding(
@@ -606,7 +611,6 @@ class _BookingScreenState extends State<BookingScreen> {
           const SizedBox(height: 12),
         ],
         StationSection(
-          eyebrow: 'ENTITY',
           title: 'جهة الحجز',
           child: Column(
             children: [
@@ -682,7 +686,6 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         const SizedBox(height: 12),
         StationSection(
-          eyebrow: 'APPOINTMENT',
           title: 'الموعد والعيادة',
           trailing: clinic == null
               ? null
@@ -757,7 +760,6 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
         const SizedBox(height: 12),
         StationSection(
-          eyebrow: 'PATIENT',
           title: 'بيانات المراجع',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1325,113 +1327,6 @@ class _EditBookingSheetState extends State<_EditBookingSheet> {
 }
 
 // ───────────────────────── widgets ─────────────────────────
-
-class _CompactHeader extends StatelessWidget {
-  const _CompactHeader({required this.station, required this.hospital, this.onLogout});
-
-  final String station;
-  final String hospital;
-  final Future<void> Function()? onLogout;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [MsdTokens.deep, MsdTokens.cyan, MsdTokens.deep],
-        ),
-      ),
-      child: Row(
-        children: [
-          const MedicalMark(size: 38),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    station,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text('·', style: TextStyle(color: MsdTokens.mintWash)),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    hospital,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: MsdTokens.mintWash,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('إعدادات المحطة من قائمة التطبيق')),
-              );
-            },
-            tooltip: 'الإعدادات',
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: 0.12),
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(Icons.settings_outlined, size: 20),
-          ),
-          if (onLogout != null)
-            IconButton(
-              onPressed: () async {
-                final ok = await showDialog<bool>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('تسجيل الخروج'),
-                    content: const Text('هل تريد تسجيل الخروج؟'),
-                    actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    actionsAlignment: MainAxisAlignment.spaceBetween,
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('إلغاء'),
-                      ),
-                      FilledButton(
-                        onPressed: () => Navigator.pop(ctx, true),
-                        style: FilledButton.styleFrom(backgroundColor: MsdColors.danger),
-                        child: const Text('تسجيل الخروج'),
-                      ),
-                    ],
-                  ),
-                );
-                if (ok == true) await onLogout!();
-              },
-              tooltip: 'تسجيل الخروج',
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.12),
-                foregroundColor: Colors.white,
-              ),
-              icon: const Icon(Icons.logout_rounded, size: 20),
-            ),
-        ],
-      ),
-    );
-  }
-}
 
 class _DateTile extends StatelessWidget {
   const _DateTile({required this.date, required this.onTap});

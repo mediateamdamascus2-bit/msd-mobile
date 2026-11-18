@@ -633,6 +633,7 @@ class ApiClient {
     required String governorate,
     String? adminUnit,
     required String bookedClinic,
+    String? legal,
   }) async {
     final res = await _post(
       Uri.parse('$_base/api/facilities/$facilityId/reception/cases'),
@@ -649,6 +650,7 @@ class ApiClient {
         'governorate': governorate,
         'adminUnit': adminUnit,
         'bookedClinic': bookedClinic,
+        'legal': legal,
       }),
     );
     if (res.statusCode == 401) {
@@ -717,6 +719,7 @@ class ApiClient {
     required String governorate,
     String? adminUnit,
     required String bookedClinic,
+    String? legal,
   }) async {
     final res = await _put(
       Uri.parse('$_base/api/facilities/$facilityId/reception/cases/$caseId'),
@@ -733,6 +736,7 @@ class ApiClient {
         'governorate': governorate,
         'adminUnit': adminUnit,
         'bookedClinic': bookedClinic,
+        'legal': legal,
       }),
     );
     return _decodeMap(res, failLabel: 'تعذر حفظ التعديلات');
@@ -803,6 +807,20 @@ class ApiClient {
     if (res.statusCode == 403) throw ApiException('لا صلاحية للحجز');
     if (res.statusCode < 200 || res.statusCode >= 300) {
       _throwHttp(res, 'تعذر جلب التوفر (${res.statusCode})');
+    }
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
+  /// Reception-safe booking lists (entities / clinics / authorities).
+  Future<Map<String, dynamic>> bookingCatalog(String facilityId) async {
+    final res = await _get(
+      Uri.parse('$_base/api/facilities/$facilityId/booking/catalog'),
+      headers: _headers,
+    );
+    _ensureAuth(res.statusCode);
+    if (res.statusCode == 403) throw ApiException('لا صلاحية لكتالوج الحجز');
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      _throwHttp(res, 'تعذر جلب كتالوج الحجز (${res.statusCode})');
     }
     return jsonDecode(res.body) as Map<String, dynamic>;
   }

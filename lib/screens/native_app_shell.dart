@@ -19,6 +19,7 @@ import 'ops/ops_training_screen.dart';
 import 'ops/ops_units_screen.dart';
 import 'ops/ops_warehouses_screen.dart';
 import 'settings_screen.dart';
+import '../theme/station_chrome.dart';
 import '../theme/tokens.dart';
 
 class NativeAppShell extends StatefulWidget {
@@ -141,27 +142,7 @@ class _NativeAppShellState extends State<NativeAppShell> with WidgetsBindingObse
       );
 
   Future<void> _confirmLogout() async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('تسجيل الخروج'),
-        content: const Text('هل تريد تسجيل الخروج؟'),
-        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('إلغاء'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: MsdTokens.danger),
-            child: const Text('تسجيل الخروج'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) await widget.onLogout();
+    if (await confirmLogout(context)) await widget.onLogout();
   }
 
   @override

@@ -795,9 +795,10 @@ class _SummaryCell extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub),
+                  maxLines: 2,
+                  softWrap: true,
+                  overflow: TextOverflow.clip,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: MsdTokens.sub, height: 1.3),
                 ),
               ],
             ),

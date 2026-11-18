@@ -64,22 +64,53 @@ class _LatticePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+/// Shared logout confirm — stacked actions so «إلغاء» never clips at 360×1.3.
+Future<bool> confirmLogout(BuildContext context) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('تسجيل الخروج'),
+      content: const Text('هل تريد تسجيل الخروج؟'),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      actions: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: MsdTokens.danger),
+              child: const Text('تسجيل الخروج'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('إلغاء'),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+  return ok == true;
+}
+
 class StationSection extends StatelessWidget {
   const StationSection({
     super.key,
-    required this.eyebrow,
+    this.eyebrow,
     required this.title,
     required this.child,
     this.trailing,
   });
 
-  final String eyebrow;
+  final String? eyebrow;
   final String title;
   final Widget child;
   final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
+    final showEyebrow = eyebrow != null && eyebrow!.trim().isNotEmpty;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
@@ -99,27 +130,33 @@ class StationSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      eyebrow,
-                      style: TextStyle(
-                        fontSize: 12,
-                        letterSpacing: 1.2,
-                        color: MsdColors.cyan,
-                        fontWeight: FontWeight.w600,
+                    if (showEyebrow) ...[
+                      Text(
+                        eyebrow!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          letterSpacing: 1.2,
+                          color: MsdColors.cyan,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
+                      const SizedBox(height: 2),
+                    ],
                     Text(
                       title,
+                      maxLines: 2,
+                      softWrap: true,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                         color: MsdColors.ink,
+                        height: 1.25,
                       ),
                     ),
                   ],
@@ -136,7 +173,7 @@ class StationSection extends StatelessWidget {
   }
 }
 
-/// Hospital mark — letter H (replaces medical cross glyphs).
+/// Hospital mark — MSD logo (falls back to a soft plate if the asset is missing).
 class MedicalMark extends StatelessWidget {
   const MedicalMark({super.key, this.size = 56, this.filled = true});
 
@@ -145,62 +182,124 @@ class MedicalMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!filled) {
-      return SizedBox(
-        width: size,
-        height: size,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(size * 0.22),
-            border: Border.all(color: MsdColors.cyan, width: size * 0.07),
-          ),
-          child: Center(
-            child: Text(
-              'H',
-              style: TextStyle(
-                color: MsdColors.cyan,
-                fontSize: size * 0.52,
-                fontWeight: FontWeight.w800,
-                height: 1,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
+    final radius = BorderRadius.circular(size * 0.28);
     return SizedBox(
       width: size,
       height: size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(size * 0.28),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [MsdTokens.cyan, MsdTokens.cyan, MsdTokens.teal],
+          borderRadius: radius,
+          color: filled ? Colors.white.withValues(alpha: 0.14) : Colors.transparent,
+          border: Border.all(
+            color: filled ? Colors.white.withValues(alpha: 0.28) : MsdColors.cyan,
+            width: filled ? 1 : size * 0.06,
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: MsdTokens.deepWash,
-              blurRadius: 14,
-              offset: Offset(0, 6),
-            ),
-          ],
-          border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
         ),
-        child: Center(
-          child: Text(
-            'H',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.96),
-              fontSize: size * 0.48,
-              fontWeight: FontWeight.w800,
-              height: 1,
-              letterSpacing: -0.5,
+        child: ClipRRect(
+          borderRadius: radius,
+          child: Padding(
+            padding: EdgeInsets.all(size * 0.08),
+            child: Image.asset(
+              'assets/logo.png',
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.local_hospital_rounded,
+                color: filled ? Colors.white : MsdColors.cyan,
+                size: size * 0.55,
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Compact station header: full station name + hospital on two lines (no ellipsis).
+class StationCompactHeader extends StatelessWidget {
+  const StationCompactHeader({
+    super.key,
+    required this.station,
+    required this.hospital,
+    this.onLogout,
+    this.onSettings,
+  });
+
+  final String station;
+  final String hospital;
+  final Future<void> Function()? onLogout;
+  final VoidCallback? onSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [MsdTokens.deep, MsdTokens.cyan, MsdTokens.deep],
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const MedicalMark(size: 40),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  station,
+                  maxLines: 2,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  hospital,
+                  maxLines: 2,
+                  softWrap: true,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: MsdTokens.mintWash,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (onSettings != null)
+            IconButton(
+              onPressed: onSettings,
+              tooltip: 'الإعدادات',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white.withValues(alpha: 0.12),
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.settings_outlined, size: 20),
+            ),
+          if (onLogout != null)
+            IconButton(
+              onPressed: () async {
+                if (await confirmLogout(context)) await onLogout!();
+              },
+              tooltip: 'تسجيل الخروج',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white.withValues(alpha: 0.12),
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.logout_rounded, size: 20),
+            ),
+        ],
       ),
     );
   }
