@@ -132,6 +132,7 @@ class _ClinicScreenState extends State<ClinicScreen> with WidgetsBindingObserver
   }
 
   bool _wasCalled(Map<String, dynamic> item) {
+    if (_callCountOf(item) > 0) return true;
     final called = item['calledAt'];
     return called != null && called.toString().isNotEmpty && called.toString() != 'null';
   }
@@ -946,7 +947,6 @@ class _ClinicScreenState extends State<ClinicScreen> with WidgetsBindingObserver
   }
 
   Widget _examPanel(Map<String, dynamic> selected) {
-    final called = _wasCalled(selected);
     final count = _callCountOf(selected);
     final admitOptions = ['أسرّة الاستشفاء', 'العناية', 'العمليات'];
 
@@ -973,10 +973,10 @@ class _ClinicScreenState extends State<ClinicScreen> with WidgetsBindingObserver
               ),
               const SizedBox(width: 8),
               OutlinedButton(
-                onPressed: (_busy || !called) ? null : _noShow,
+                onPressed: (_busy || count <= 0) ? null : _noShow,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: MsdColors.danger,
-                  side: BorderSide(color: MsdColors.danger.withValues(alpha: called ? 1 : 0.3)),
+                  side: BorderSide(color: MsdColors.danger.withValues(alpha: count > 0 ? 1 : 0.3)),
                   minimumSize: const Size(0, 48),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
