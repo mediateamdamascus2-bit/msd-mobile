@@ -18,7 +18,7 @@ class OpsPrisonsScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'صحة السجون',
-      eyebrow: 'PRISONS · HEALTH',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         if (d.boardPrisons.isNotEmpty) {
           final board = d.boardPrisons;

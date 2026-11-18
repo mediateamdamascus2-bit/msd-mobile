@@ -15,7 +15,7 @@ class OpsHrScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'القوى البشرية',
-      eyebrow: 'HR · WORKFORCE',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         final list = d.boardStaff;
         final med = list.where((e) => e['kind'] == 'طبي').length;

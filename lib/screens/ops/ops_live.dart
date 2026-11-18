@@ -71,11 +71,13 @@ class _OpsLiveState extends State<OpsLive> {
   Widget build(BuildContext context) {
     final d = _data;
     if (d != null) {
-      return widget.builder(context, d, '${widget.eyebrow} · تحديث ${hhmm(d.fetchedAt)}', _load);
+      final stamp = 'تحديث ${hhmm(d.fetchedAt)}';
+      final eyebrow = widget.eyebrow.trim().isEmpty ? stamp : '${widget.eyebrow} · $stamp';
+      return widget.builder(context, d, eyebrow, _load);
     }
     return OpsScaffold(
       title: widget.title,
-      eyebrow: widget.eyebrow,
+      eyebrow: widget.eyebrow.trim().isEmpty ? '' : widget.eyebrow,
       onRefresh: _load,
       implyLeading: widget.implyLeading,
       children: [

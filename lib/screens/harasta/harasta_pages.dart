@@ -113,7 +113,7 @@ class _HarastaStructurePageState extends State<HarastaStructurePage> {
     return HpPage(
       children: [
         const HpIntro(
-          eyebrow: 'STRUCTURE',
+          eyebrow: '',
           lead: 'مجالات الخدمة ووحداتها مع حالة التوافر.',
         ),
         HpChips(
@@ -147,7 +147,7 @@ class HarastaFloorsPage extends StatelessWidget {
     return HpPage(
       children: [
         const HpIntro(
-          eyebrow: 'FLOORS',
+          eyebrow: '',
           lead: 'خريطة مبسّطة لتوزّع الأجنحة والخدمات على طوابق المشفى.',
         ),
         for (final f in HarastaCatalog.floors)
@@ -167,7 +167,7 @@ class HarastaStaffPage extends StatelessWidget {
     return HpPage(
       children: [
         const HpIntro(
-          eyebrow: 'STAFF',
+          eyebrow: '',
           lead: 'توزيع الكادر المذكور في هيكلية المشفى.',
         ),
         HpPanel(
@@ -208,7 +208,7 @@ class HarastaVisionPage extends StatelessWidget {
     return HpPage(
       children: [
         const HpIntro(
-          eyebrow: 'VISION 2030',
+          eyebrow: '',
           lead: 'مسار التحول والتوسع والاعتماد لمشفى حرستا على مدى السنوات القادمة.',
         ),
         for (final v in HarastaCatalog.vision)
@@ -306,7 +306,7 @@ class _HarastaFilesPageState extends State<HarastaFilesPage> {
     return HpPage(
       onRefresh: _load,
       children: [
-        HpIntro(eyebrow: 'PATIENT FILES', lead: lead),
+        HpIntro(eyebrow: '', lead: lead),
         HpPanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -491,7 +491,7 @@ class _HarastaFleetPageState extends State<HarastaFleetPage> {
       onRefresh: _load,
       children: [
         const HpIntro(
-          eyebrow: 'FLEET',
+          eyebrow: '',
           lead: 'متابعة جاهزية المركبات والمهام الجارية والصيانة.',
         ),
         if (_loading)
@@ -557,7 +557,7 @@ class _HarastaStoresPageState extends State<HarastaStoresPage> {
       onRefresh: _load,
       children: [
         const HpIntro(
-          eyebrow: 'STORES',
+          eyebrow: '',
           lead: 'أصناف المخزون والكميات المنخفضة وتواريخ الانتهاء.',
         ),
         if (_loading)
@@ -636,7 +636,7 @@ class _HarastaAssetsPageState extends State<HarastaAssetsPage> {
       onRefresh: _load,
       children: [
         const HpIntro(
-          eyebrow: 'ASSETS',
+          eyebrow: '',
           lead: 'متابعة الحالة والأعداد فقط — الإضافة وتغيير الحالة من مكتب الأصول المستقل (مستخدم assets-office).',
         ),
         GridView.count(
@@ -786,7 +786,7 @@ class _HarastaAssetsOfficePageState extends State<HarastaAssetsOfficePage> {
         onRefresh: _load,
         children: [
           const HpIntro(
-            eyebrow: 'ASSETS OFFICE',
+            eyebrow: '',
             lead: 'إضافة التجهيزات وتغيير حالتها تحت إشراف مكتب الأصول. واجهة مستقلة عن لوحة المشفى.',
           ),
           HpPanel(

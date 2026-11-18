@@ -68,7 +68,7 @@ class _OpsReportsScreenState extends State<OpsReportsScreen> {
     return OpsLive(
       api: widget.api,
       title: 'التقارير والإحصاءات',
-      eyebrow: 'REPORTS · ANALYTICS',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         final days = _periods[_period]!;
         final since = DateTime.now().subtract(Duration(days: days));

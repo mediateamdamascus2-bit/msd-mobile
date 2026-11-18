@@ -183,7 +183,8 @@ class OpsScaffold extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(title, style: opsText(16, w: FontWeight.w800)),
-            Text(eyebrow, style: opsText(12, w: FontWeight.w700, color: OpsColors.faint)),
+            if (eyebrow.trim().isNotEmpty)
+              Text(eyebrow, style: opsText(12, w: FontWeight.w700, color: OpsColors.faint)),
           ],
         ),
       ),

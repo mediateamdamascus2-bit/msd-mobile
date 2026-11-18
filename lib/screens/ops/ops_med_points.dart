@@ -21,7 +21,7 @@ class OpsMedPointsScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: title,
-      eyebrow: isCenter ? 'CENTERS · MEDICAL CENTERS · OPS' : 'UNITS · MEDICAL UNITS · OPS',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         final kindName = isCenter ? 'مركز طبي' : 'وحدة طبية';
         final board = d.boardPoints.where((p) => p['type']?.toString() == kindName).toList();

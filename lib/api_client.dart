@@ -420,6 +420,103 @@ class ApiClient {
     return _decodeMap(res, failLabel: 'تعذر التحويل للقسم');
   }
 
+  Future<Map<String, dynamic>> noShowClinicCase(String facilityId, String caseId) async {
+    final res = await _post(
+      Uri.parse('$_base/api/facilities/$facilityId/clinics/cases/$caseId/no-show'),
+      headers: _headers,
+      body: '{}',
+    );
+    return _decodeMap(res, failLabel: 'تعذر تسجيل عدم الحضور');
+  }
+
+  Future<Map<String, dynamic>> submitClinicVisit(
+    String facilityId,
+    String caseId, {
+    required String doctor,
+    String? complaint,
+    String? diagnosis,
+    required String outcome,
+    String? reason,
+    List<Map<String, dynamic>>? orders,
+    int? version,
+  }) async {
+    final body = <String, dynamic>{
+      'doctor': doctor,
+      'complaint': complaint,
+      'diagnosis': diagnosis,
+      'outcome': outcome,
+      'reason': reason,
+      'orders': orders ?? const [],
+    };
+    if (version != null) body['version'] = version;
+    final res = await _post(
+      Uri.parse('$_base/api/facilities/$facilityId/clinics/cases/$caseId/submit'),
+      headers: _headers,
+      body: jsonEncode(body),
+    );
+    return _decodeMap(res, failLabel: 'تعذر حفظ المعاينة');
+  }
+
+  Future<Map<String, dynamic>> stationSettings(String facilityId, String key) async {
+    final res = await _get(
+      Uri.parse(
+        '$_base/api/facilities/$facilityId/station-settings?key=${Uri.encodeQueryComponent(key)}',
+      ),
+      headers: _headers,
+    );
+    return _decodeMap(res, failLabel: 'تعذر جلب إعدادات المحطة');
+  }
+
+  Future<Map<String, dynamic>> saveStationSettings(
+    String facilityId, {
+    required String key,
+    required Map<String, dynamic> data,
+    required int version,
+  }) async {
+    final res = await _put(
+      Uri.parse('$_base/api/facilities/$facilityId/station-settings'),
+      headers: _headers,
+      body: jsonEncode({'key': key, 'data': data, 'version': version}),
+    );
+    return _decodeMap(res, failLabel: 'تعذر حفظ إعدادات المحطة');
+  }
+
+  Future<List<dynamic>> pharmacyStock(String facilityId) async {
+    final res = await _get(
+      Uri.parse('$_base/api/facilities/$facilityId/pharmacy'),
+      headers: _headers,
+    );
+    _ensureAuth(res.statusCode);
+    if (res.statusCode == 403) throw ApiException('لا صلاحية للصيدلية');
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw ApiException('تعذر جلب أدوية الصيدلية (${res.statusCode})');
+    }
+    final body = jsonDecode(res.body);
+    if (body is List) return body;
+    if (body is Map && body['items'] is List) return body['items'] as List<dynamic>;
+    return const [];
+  }
+
+  Future<Map<String, dynamic>> listFolders(
+    String facilityId, {
+    String? patient,
+    String? clinic,
+  }) async {
+    final params = <String>[];
+    if (patient != null && patient.trim().isNotEmpty) {
+      params.add('patient=${Uri.encodeQueryComponent(patient.trim())}');
+    }
+    if (clinic != null && clinic.trim().isNotEmpty) {
+      params.add('clinic=${Uri.encodeQueryComponent(clinic.trim())}');
+    }
+    final qs = params.isEmpty ? '' : '?${params.join('&')}';
+    final res = await _get(
+      Uri.parse('$_base/api/facilities/$facilityId/folders$qs'),
+      headers: _headers,
+    );
+    return _decodeMap(res, failLabel: 'تعذر جلب الإضبارة');
+  }
+
   Future<List<dynamic>> clinicCounts(String facilityId) async {
     final res = await _get(
       Uri.parse('$_base/api/facilities/$facilityId/clinics/counts'),

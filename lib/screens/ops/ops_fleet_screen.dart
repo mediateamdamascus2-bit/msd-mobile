@@ -56,7 +56,7 @@ class OpsFleetScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'الأسطول',
-      eyebrow: 'MONITOR · FLEET',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         final all = d.allVehicles;
         final has = d.hasFleet;

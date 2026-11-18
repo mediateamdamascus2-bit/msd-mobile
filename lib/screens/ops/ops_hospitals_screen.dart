@@ -18,7 +18,7 @@ class OpsHospitalsScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'المشافي',
-      eyebrow: 'HOSPITALS · REFERRALS',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         if (d.boardHospitals.isNotEmpty) {
           final board = d.boardHospitals;

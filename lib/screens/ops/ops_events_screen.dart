@@ -166,7 +166,7 @@ class _OpsEventsScreenState extends State<OpsEventsScreen> {
     return OpsLive(
       api: widget.api,
       title: 'الأحداث الطبية',
-      eyebrow: 'MONITOR · SITREP',
+      eyebrow: '',
       implyLeading: !widget.embedded,
       builder: (context, d, eyebrow, refresh) {
         final all = d.allEvents;

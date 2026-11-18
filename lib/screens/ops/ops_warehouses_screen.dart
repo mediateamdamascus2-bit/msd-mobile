@@ -16,7 +16,7 @@ class OpsWarehousesScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'المستودعات',
-      eyebrow: 'WAREHOUSES · INVENTORY',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         if (d.boardWarehouses.isNotEmpty) {
           final board = d.boardWarehouses;

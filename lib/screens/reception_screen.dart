@@ -773,6 +773,11 @@ class _ReceptionScreenState extends State<ReceptionScreen> with WidgetsBindingOb
                   station: 'الاستقبال',
                   hospital: 'مشفى الشرطة في حرستا',
                   onLogout: widget.onLogout,
+                  onSettings: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('إعدادات المحطة من قائمة التطبيق')),
+                    );
+                  },
                 ),
               ),
               if (_lastUpdated != null)
@@ -992,7 +997,7 @@ class _ReceptionScreenState extends State<ReceptionScreen> with WidgetsBindingOb
               minimumSize: const Size.fromHeight(48),
             ),
             icon: const Icon(Icons.emergency_rounded),
-            label: const Text('إسعافي — فتح وتحويل للإسعاف'),
+            label: const Text('حالة إسعافية'),
           ),
           const SizedBox(height: 12),
           if (!_isEmergency)

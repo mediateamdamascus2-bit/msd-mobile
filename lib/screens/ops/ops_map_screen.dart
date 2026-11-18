@@ -180,7 +180,7 @@ class _OpsMapScreenState extends State<OpsMapScreen> {
   Widget build(BuildContext context) => OpsLive(
         api: widget.api,
         title: 'الخريطة التفاعلية',
-        eyebrow: 'MAP · LIVE ASSETS',
+        eyebrow: '',
         builder: (context, d, eyebrow, refresh) {
           final assets = _assetsFrom(d);
           if (assets.isEmpty) {

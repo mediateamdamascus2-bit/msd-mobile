@@ -93,16 +93,18 @@ class HpIntro extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                eyebrow.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.55,
-                  color: MsdTokens.mintWash,
+              if (eyebrow.trim().isNotEmpty) ...[
+                Text(
+                  eyebrow,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.55,
+                    color: MsdTokens.mintWash,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
+              ],
               Text(
                 lead,
                 style: TextStyle(

@@ -15,7 +15,7 @@ class OpsTrainingScreen extends StatelessWidget {
     return OpsLive(
       api: api,
       title: 'التدريب والتطوير',
-      eyebrow: 'TRAINING · DEVELOPMENT',
+      eyebrow: '',
       builder: (context, d, eyebrow, refresh) {
         final list = d.boardCourses;
         final active = list.where((e) => e['status'] == 'نشطة').length;
